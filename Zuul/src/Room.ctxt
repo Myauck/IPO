@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.target=Room
+comment0.text=\r\n\ Classe\ Room\ -\ Un\ lieu\ du\ jeu\ d'aventure\ Zuul.\r\n\r\n\ @author\ L\u00E9o\ GAILLET\r\n\ @version\ 1\r\n
+comment1.params=description
+comment1.target=Room(java.lang.String)
+comment1.text=\r\n\ Constructeur\ de\ la\ classe\ Room\r\n\ Permet\ d'initialiser\ une\ nouvelle\ salle\r\n\ \r\n\ @param\ description\ Description\ de\ la\ salle\ instanci\u00C3\u00A9e\r\n
+comment2.params=
+comment2.target=java.lang.String\ getDescription()
+comment2.text=\r\n\ Getter\ qui\ r\u00E9cup\u00E8re\ la\ description\ de\ la\ salle\r\n\ \r\n\ @return\ Description\ de\ la\ salle\r\n
+comment3.params=direction
+comment3.target=Room\ getExit(java.lang.String)
+comment3.text=\r\n\ Getter\ qui\ r\u00E9cup\u00E8re\ la\ salle\ d'une\ sortie\ en\ fonction\ de\ la\ direction\ de\ la\ sortie\r\n\ \r\n\ @param\ direction\ Direction\ de\ la\ sortie\ qu'on\ cherche\r\n\ @return\ Salle\ se\ trouvant\ \u00E0\ la\ sortie\ recherch\u00E9e\r\n
+comment4.params=direction\ exitRoom
+comment4.target=void\ setExit(java.lang.String,\ Room)
+comment4.text=\r\n\ Setter\ qui\ affecte\ une\ nouvelle\ salle\ de\ sortie\ en\ fonction\ de\ la\ direction\ que\ l'on\ a\ choisie\r\n\ \r\n\ @param\ direction\ Direction\ de\ la\ sortie\r\n\ @param\ exitRoom\ Salle\ qui\ se\ trouve\ dans\ la\ direction\ choisie\r\n
+comment5.params=
+comment5.target=java.lang.String\ getExitsString()
+comment5.text=\r\n\ Getter\ qui\ r\u00E9cup\u00E8re\ les\ sorties\ disponibles\ dans\ la\ salle\ instanci\u00E9e\r\n\ \r\n\ @return\ Cha\u00EEne\ comportant\ la\ liste\ des\ sorties\ disponibles\r\n
+comment6.params=
+comment6.target=java.lang.String\ getLongDescription()
+comment6.text=\r\n\ Getter\ qui\ permet\ de\ r\u00E9cup\u00E9rer\ l'int\u00E9gralit\u00E9\ des\ informations\ de\ la\ salle\r\n\ \r\n\ @return\ Description\ compl\u00E8te\ de\ la\ salle\ instanci\u00E9e\r\n
+numComments=7
