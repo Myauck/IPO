@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Compte
+comment1.params=pSolde
+comment1.target=Compte(double)
+comment2.params=
+comment2.target=double\ getSolde()
+comment3.params=pSolde
+comment3.target=void\ affecte(double)
+comment4.params=pMontant
+comment4.target=void\ debite(double)
+comment5.params=pMontant
+comment5.target=void\ credite(double)
+numComments=6
