@@ -31,4 +31,9 @@ public class Item
     public int getWeight() {
         return this.weight;
     }
+    
+    public String getLongDescription() {
+        return "Item name: " + this.name + " is described as \"" + this.description + "\" and costs " + this.weight + " pounds.";
+    }
+    
 }

@@ -99,7 +99,7 @@ public class Room
     }
     
     public String getItemString() {
-        return this.item == null ? "No item here" : "Available item: " + this.item.getName();
+        return this.item == null ? "No item here" : "Available item: " + this.item.getLongDescription();
     }
     
 }

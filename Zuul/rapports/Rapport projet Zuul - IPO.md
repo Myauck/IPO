@@ -678,5 +678,26 @@ Et modifions la fonction `getLongDescription()`:
     }
 ```
 
+<hr>
+
+###### Exercice 7.21
+
+Pour avoir une description détaillée de l'item dans une salle, nous allons créer une nouvelle fonction dans la classe `Item` car il s'agit de la description détaillée de l'Item.
+
+```java
+    public String getLongDescription() {
+        return "Item name: " + this.name + " is described as \"" + this.description + "\" and costs " + this.weight + " pounds.";
+    }
+```
+
+Nous devons donc modifier `getItemString()` dans la classe `Room`: 
+
+```java
+	public String getItemString() {
+        return this.item == null ? "No item here" : "Available item: " + /* this.item.getName(); */ this.item.getLongDescription();
+    }
+    
+```
+
 
 
