@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 /**
  * Classe Game - le moteur du jeu d'aventure Zuul.
  *
@@ -5,7 +7,8 @@
  */
 public class GameEngine {
 
-    private Room currentRoom, previousRoom;
+    private Room currentRoom;
+    private final Stack<Room> previousRooms = new Stack<Room>();
     private Parser parser;
     private UserInterface userInterface;
     
@@ -28,6 +31,8 @@ public class GameEngine {
         this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
         this.userInterface.println("Type 'help' if you need help.");
         printLocationInfo();
+        if(this.currentRoom.getImageName() != null)
+            this.userInterface.showImage(this.currentRoom.getImageName());
     }
     
 
@@ -125,6 +130,8 @@ public class GameEngine {
      */
     private void printLocationInfo() {
         this.userInterface.println(this.currentRoom.getLongDescription());
+        if(this.currentRoom.getImageName() != null)
+            this.userInterface.showImage(currentRoom.getImageName());
     }
     
     
@@ -146,7 +153,7 @@ public class GameEngine {
             return;
         }
         
-        this.previousRoom = this.currentRoom;
+        this.previousRooms.push(this.currentRoom);
         this.currentRoom = nextRoom;
         
         printLocationInfo();
@@ -238,14 +245,13 @@ public class GameEngine {
             return;
         }
         
-        if(this.previousRoom == null) {
+        if(this.previousRooms.size() == 0 || this.previousRooms.peek() == null) {
             this.userInterface.println("There is any previous room !");
             return;
         }
         
-        final Room alternativeRoom = this.previousRoom;
-        this.previousRoom = this.currentRoom;
-        this.currentRoom = alternativeRoom;
+        this.currentRoom = this.previousRooms.pop();
+        printLocationInfo();
     }
     
     /**

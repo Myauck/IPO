@@ -19,12 +19,13 @@ public class CommandWords
      * Constructeur qui permet d'initialiser les différentes commandes possibles.
      */
     public CommandWords() {
-        this.registeredCommands = new String[5];
+        this.registeredCommands = new String[6];
         this.registeredCommands[0] = "go";
         this.registeredCommands[1] = "help";
         this.registeredCommands[2] = "quit";
         this.registeredCommands[3] = "look";
         this.registeredCommands[4] = "eat";
+        this.registeredCommands[5] = "back";
     }
 
     

@@ -879,6 +879,8 @@ public void back(final Command command) {
     final Room alternativeRoom = this.previousRoom;
     this.previousRoom = this.currentRoom;
     this.currentRoom = alternativeRoom;
+    
+    printLocationInfo();
 }
 ```
 
@@ -905,6 +907,79 @@ private void goRoom(final Command command) {
     printLocationInfo();
 }
 ```
+
+<hr>
+
+###### Exercice 7.26
+
+Pour retourner sur les anciennes salles que nous avons traversé, nous devons faire une Pile (FILO - First In Last Out) pour pouvoir accéder aux anciennes salles au fur et à mesure que nous avançons.
+
+Pour cela nous allons modifier `goRoom` dans la classe `GameEngine`  ainsi que l'attribut par défaut :
+
+```java
+	
+/*
+	Remplaçons
+	private Room previousRoom;
+	
+	par
+ */
+	private final Stack<Room> previousRooms = new Stack<Room>();
+
+private void goRoom(final Command command) {
+    if (!command.hasSecondWord()){
+        this.userInterface.println("Go where ?");
+        return;
+    }
+
+    Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
+
+    if (nextRoom == null){
+        this.userInterface.println("There is no door !");
+        return;
+    }
+
+    /*
+     Remplaçons
+	 this.previousRoom = this.currentRoom;
+
+	 par:
+	*/
+    this.previousRooms.push(this.currentRoom);
+
+    this.currentRoom = nextRoom;
+
+    printLocationInfo();
+}
+```
+
+De plus nous devons modifier la fonction `back()` : 
+
+```java
+public void back(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("Back what ?");
+        return;
+    }
+
+    if(this.previousRooms.size() == 0 || this.previousRooms.peek() == null) {
+        this.userInterface.println("There is any previous room !");
+        return;
+    }
+
+    this.currentRoom = this.previousRooms.pop(); // On modifie ça
+    printLocationInfo();
+}
+
+```
+
+
+
+
+
+
+
+
 
 
 

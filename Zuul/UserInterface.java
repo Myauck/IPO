@@ -70,8 +70,10 @@ public class UserInterface implements ActionListener
         if ( vImageURL == null )
             System.out.println( "Image not found : " + vImagePath );
         else {
+            System.out.println("reading image " + vImagePath);
             ImageIcon vIcon = new ImageIcon( vImageURL );
             this.aImage.setIcon( vIcon );
+            System.out.println("finaly image " + vImagePath);
             this.aMyFrame.pack();
         }
     } // showImage(.)

@@ -107,6 +107,6 @@ public class Room
             itemContent.append("\"" + item.getName() + "\": ");
             itemContent.append("\t" + item.getLongDescription() + "\n");
         }
-        return "Available items (" + items.size() + ") :";
+        return "Available items (" + items.size() + ") : " + itemContent.toString();
     }
 }
