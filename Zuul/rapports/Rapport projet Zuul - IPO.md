@@ -821,3 +821,90 @@ private void createRooms() {
 }
 ```
 
+<hr>
+
+###### Exercice 7.23
+
+Pour ajouter la commande `back` modifions d'abord la fonction `interpretCommand()` dans `GameEngine` :
+
+```java
+public void interpretCommand(final String rawCommand) {
+    this.userInterface.println( "> " + rawCommand );
+    Command command = this.parser.getCommand( rawCommand.toLowerCase() );
+
+    if (command.isUnknown()) {
+        this.userInterface.println("I don't know what you mean ...");
+        return;
+    }
+
+    switch(command.getCommandWord().toLowerCase()) {
+        case "go":
+            goRoom(command);
+            return;
+        case "quit":
+            quit(command);
+            return;
+        case "help":
+            printHelp();
+            return;
+        case "look":
+            look(command);
+            return;
+        case "eat":
+            eat();
+            return;
+		// Ajoutons-la ici
+        case "back":
+            back(command);
+            return;
+        default:
+            this.userInterface.println("Unknown command !");
+            return;
+    }
+}
+
+private Room previousRoom;
+
+public void back(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("Back what ?");
+        return;
+    }
+
+    if(this.previousRoom == null) {
+        this.userInterface.println("There is any previous room !");
+        return;
+    }
+
+    final Room alternativeRoom = this.previousRoom;
+    this.previousRoom = this.currentRoom;
+    this.currentRoom = alternativeRoom;
+}
+```
+
+et dans `goRoom` nous devons ajouter à la toute fin de la fonction :
+
+```java
+private void goRoom(final Command command) {
+    if (!command.hasSecondWord()){
+        this.userInterface.println("Go where ?");
+        return;
+    }
+
+    Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
+
+    if (nextRoom == null){
+        this.userInterface.println("There is no door !");
+        return;
+    }
+
+    // Ajoutons ceci
+    this.previousRoom = this.currentRoom;
+    this.currentRoom = nextRoom;
+
+    printLocationInfo();
+}
+```
+
+
+

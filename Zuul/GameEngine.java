@@ -5,7 +5,7 @@
  */
 public class GameEngine {
 
-    private Room currentRoom;
+    private Room currentRoom, previousRoom;
     private Parser parser;
     private UserInterface userInterface;
     
@@ -146,6 +146,7 @@ public class GameEngine {
             return;
         }
         
+        this.previousRoom = this.currentRoom;
         this.currentRoom = nextRoom;
         
         printLocationInfo();
@@ -222,10 +223,29 @@ public class GameEngine {
             case "eat":
                 eat();
                 return;
+            case "back":
+                back(command);
+                return;
             default:
                 this.userInterface.println("Unknown command !");
                 return;
         }
+    }
+    
+    public void back(final Command command) {
+        if(command.hasSecondWord()) {
+            this.userInterface.println("Back what ?");
+            return;
+        }
+        
+        if(this.previousRoom == null) {
+            this.userInterface.println("There is any previous room !");
+            return;
+        }
+        
+        final Room alternativeRoom = this.previousRoom;
+        this.previousRoom = this.currentRoom;
+        this.currentRoom = alternativeRoom;
     }
     
     /**
