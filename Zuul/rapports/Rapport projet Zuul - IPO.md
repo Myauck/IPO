@@ -548,3 +548,11 @@ Les classes commençant par `J` (6) :
 - `javax.swing.JPanel` correspond à l'interface qui permettra de récupérer les évènements que le joueur aura appelé. Le `JPanel` peut être comparé au contenu du `JFrame` c'est à dire l'intérieur du cadre de notre fenêtre.
 - `javax.swing.JScrollPane` correspond à la barre qui permet de faire défiler une zone qui possède un gros contenu. Ici ca correspondra à l'historique des entrées / sorties des commandes de l'utilisateur.
 
+<hr>
+
+###### Exercice 7.18.7
+
+`addActionListener();` est une fonction appartenant à l'interface `Component` qui permet d'ajouter un composant qui hérite de `Component` dans une liste d'éléments pouvant être appelé lors d'une action de l'utilisateur (touche tapée, clic sur un élément de l'interface, etc...) et donc d'appelé les éléments enregistrés selon les différents évènements.
+
+
+
