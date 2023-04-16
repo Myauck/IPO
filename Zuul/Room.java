@@ -91,7 +91,7 @@ public class Room
     }
     
     public Item getItem(final String itemName) {
-        return this.items.get(itemName);
+        return this.items.get(itemName.toLowerCase());
     }
     
     public void addItem(final Item item) {

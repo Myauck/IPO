@@ -731,8 +731,6 @@ private void look(Command command) {
 
 ###### Exercice 7.22
 
-Pour avoir la possibilité d'ajouter plusieurs items dans la salle nous pouvons utiliser une `HashMap` ou une `ArrayList` selon la façon dont nous allons chercher les items dans une salle. Ici nous allons chercher les items selon leur nom qui a été défini, il est donc préférable d'utiliser une `HashMap<String, Item>` avec `String` qui correspond au type de la valeur que nous allons entrer dans la `HashMap` pour trouver l'`Item` que nous recherchons.
-
 Nous allons effectuer quelques modifications dans la classe `Room`:
 
 ```java
@@ -789,5 +787,37 @@ private void look(Command command) {
 }
 ```
 
+<hr>
 
+###### Exercice 7.22.1
+
+Pour avoir la possibilité d'ajouter plusieurs items dans la salle nous pouvons utiliser une `HashMap` ou une `ArrayList` selon la façon dont nous allons chercher les items dans une salle. Ici nous allons chercher les items selon leur nom qui a été défini, il est donc préférable d'utiliser une `HashMap<String, Item>` avec `String` qui correspond au type de la valeur que nous allons entrer dans la `HashMap` pour trouver l'`Item` que nous recherchons.
+
+<hr>
+
+###### Exercice 7.22.2
+
+Nous allons ajouter les items nécessaire à cet exercice (3 items minimum, dont 1 dans la salle de début, et 2 autres dans une seule et même salle).
+
+Dans la classe `GameEngine` dans la fonction qui doit initialiser les différentes salles (`createRooms()`) nous allons ajouter les Items
+
+```java
+private void createRooms() {
+    // [...]
+    
+    // Défini la salle de départ (elle était déjà censé être là)
+    this.currentRoom = fortressEntrance;
+
+    // Définis les différents item dans le jeu
+    Item fleur, chaise, epee;
+
+    fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
+    chaise = new Item("Chaise", "Bon, même si elle ne sert à rien, il faut quand même la mettre", 5);
+    epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, épée stylée", 2);
+    this.currentRoom.addItem(fleur);
+
+    fortressDungeon.addItem(chaise);
+    fortressDungeon.addItem(epee);
+}
+```
 

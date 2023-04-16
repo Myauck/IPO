@@ -32,6 +32,7 @@ public class GameEngine {
     
 
     private void createRooms() {
+        
         // DÃ©finis les diffÃ©rents endroits possible dans le jeu
         Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
             fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
@@ -95,8 +96,19 @@ public class GameEngine {
 
         forbiddenForestCave.setExit("up", forbiddenForest);
 
-        // Dï¿½fini la salle de dï¿½part
+        // Défini la salle de départ
         this.currentRoom = fortressEntrance;
+        
+        // Définis les différents item dans le jeu
+        Item fleur, chaise, epee;
+        
+        fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
+        chaise = new Item("Chaise", "Bon, même si elle ne sert à rien, il faut quand même la mettre", 5);
+        epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, épée stylée", 2);
+        this.currentRoom.addItem(fleur);
+        
+        fortressDungeon.addItem(chaise);
+        fortressDungeon.addItem(epee);
     }
     
     
