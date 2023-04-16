@@ -4,6 +4,7 @@ import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ public class UserInterface implements ActionListener
     private JTextField aEntryField;
     private JTextArea  aLog;
     private JLabel     aImage;
+    private JButton    helpButton;
 
     /**
      * Construct a UserInterface. As a parameter, a Game Engine
@@ -63,7 +65,7 @@ public class UserInterface implements ActionListener
      */
     public void showImage( final String pImageName )
     {
-        String vImagePath = "" + pImageName; // to change the directory
+        String vImagePath = "assets/" + pImageName; // to change the directory
         URL vImageURL = this.getClass().getClassLoader().getResource( vImagePath );
         if ( vImageURL == null )
             System.out.println( "Image not found : " + vImagePath );
@@ -95,7 +97,7 @@ public class UserInterface implements ActionListener
      */
     private void createGUI()
     {
-        this.aMyFrame = new JFrame( "No title !?" ); // change the title !
+        this.aMyFrame = new JFrame( "Pas de titre décidé pour le moment" ); // change the title !
         this.aEntryField = new JTextField( 34 );
 
         this.aLog = new JTextArea();
@@ -105,19 +107,21 @@ public class UserInterface implements ActionListener
         vListScroller.setMinimumSize( new Dimension(100,100) );
 
         this.aImage = new JLabel();
+        
+        this.helpButton = new JButton("Help");
 
         JPanel vPanel = new JPanel();
         vPanel.setLayout( new BorderLayout() ); // ==> only five places
         vPanel.add( this.aImage, BorderLayout.NORTH );
         vPanel.add( vListScroller, BorderLayout.CENTER );
         vPanel.add( this.aEntryField, BorderLayout.SOUTH );
+        vPanel.add( this.helpButton, BorderLayout.EAST );
 
         this.aMyFrame.getContentPane().add( vPanel, BorderLayout.CENTER );
 
-        // add some event listeners to some components
-        this.aEntryField.addActionListener( this );
-
-        // to end program when window is closed
+        this.helpButton.addActionListener(this);
+        this.aEntryField.addActionListener(this);
+        
         this.aMyFrame.addWindowListener(
             new WindowAdapter() { // anonymous class
                 @Override public void windowClosing(final WindowEvent pE)
@@ -132,14 +136,19 @@ public class UserInterface implements ActionListener
     } // createGUI()
 
     /**
-     * Actionlistener interface for entry textfield.
+     * Actionlistener interface for entries.
      */
     @Override public void actionPerformed( final ActionEvent pE ) 
     {
-        // no need to check the type of action at the moment
-        // because there is only one possible action (text input) :
-        this.processCommand(); // never suppress this line
-    } // actionPerformed(.)
+        if(pE.getSource() == this.aEntryField) {
+            this.processCommand();
+        }
+        else if(pE.getSource() == this.helpButton) {
+            if(pE.getActionCommand().equalsIgnoreCase("help")) {
+                this.aEngine.interpretCommand("help");
+            }
+        }
+    }
 
     /**
      * A command has been entered in the entry field.  

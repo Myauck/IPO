@@ -554,5 +554,51 @@ Les classes commençant par `J` (6) :
 
 `addActionListener();` est une fonction appartenant à l'interface `Component` qui permet d'ajouter un composant qui hérite de `Component` dans une liste d'éléments pouvant être appelé lors d'une action de l'utilisateur (touche tapée, clic sur un élément de l'interface, etc...) et donc d'appelé les éléments enregistrés selon les différents évènements.
 
+<hr>
 
+###### Exercice 7.18.8
+
+Pour ajouter le bouton Help nous devons importer la classe `javax.swing.JButton` qui permet d'utiliser les bouton dans notre interface et ajoutons comme attribut `private JButton helpButton;`
+
+dans la fonction `createGUI()` dans la classe `UserInterface` ajoutons
+
+```java
+private void createGUI() {
+    // [...]
+    this.aImage = new JLabel();
+
+    // ajoutons ceci 
+    this.helpButton = new JButton("Help");
+
+    JPanel vPanel = new JPanel();
+    // [...]
+    this.aMyFrame.getContentPane().add( vPanel, BorderLayout.CENTER );
+
+    // Et ceci aussi
+    this.helpButton.addActionListener(this);
+    
+    this.aEntryField.addActionListener(this);
+    // [...]
+    this.aEntryField.requestFocus();
+}
+```
+
+Et modifions la fonction `actionPerformed()`:
+
+```java
+/**
+ * Actionlistener interface for entries.
+ */
+@Override public void actionPerformed( final ActionEvent pE ) 
+{
+    if(pE.getSource() == this.aEntryField) {
+        this.processCommand();
+    }
+    else if(pE.getSource() == this.helpButton) {
+        if(pE.getActionCommand().equalsIgnoreCase("help")) {
+            this.aEngine.interpretCommand("help");
+        }
+    }
+}
+```
 
