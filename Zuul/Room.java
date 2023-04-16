@@ -18,6 +18,7 @@ public class Room
     
     private final String description;
     private HashMap<String, Room> exits = new HashMap<String, Room>();
+    private final String imageName;
     
     
     /**
@@ -26,8 +27,9 @@ public class Room
      * 
      * @param description Description de la salle instanciée
      */
-    public Room(final String description) {
+    public Room(final String description,final String imageName) {
         this.description = description;
+        this.imageName = imageName;
     }
     
     
@@ -40,6 +42,9 @@ public class Room
         return this.description;
     }
  
+    public String getImageName() {
+        return this.imageName;
+    }
     
     /**
      * Getter qui r�cup�re la salle d'une sortie en fonction de la direction de la sortie

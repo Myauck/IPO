@@ -535,5 +535,16 @@ public String getCommandList() {
 
 ###### Exercice 7.18.5 OPTIONNEL TEMPORAIREMENT
 
+<hr>
 
+###### Exercice 7.18.6
+
+Les classes commençant par `J` (6) :
+
+- `javax.swing.JFrame` correspond au cadre de la fenêtre, la barre de menu, le titre, la taille de la fenêtre, etc...
+- `javax.swing.JTextField` correspond à une entrée où l'utilisateur pourra envoyer des informations au programme, un peu comme un `<input>` en HTML, dans notre situation il s'agit d'un champ pour les commandes.
+- `javax.swing.JTextArea` correspond à une large zone de texte, éditable ou non. Ici, cela correspond à l'affichage de la console, les informations des différentes sorties des commandes du jeu
+- `javax.swing.JLabel` correspond à un label, un objet, mais qui ne peut pas être modifiable par l'utilisateur. Ici cela correspondra à un endroit pour afficher nos images
+- `javax.swing.JPanel` correspond à l'interface qui permettra de récupérer les évènements que le joueur aura appelé. Le `JPanel` peut être comparé au contenu du `JFrame` c'est à dire l'intérieur du cadre de notre fenêtre.
+- `javax.swing.JScrollPane` correspond à la barre qui permet de faire défiler une zone qui possède un gros contenu. Ici ca correspondra à l'historique des entrées / sorties des commandes de l'utilisateur.
 

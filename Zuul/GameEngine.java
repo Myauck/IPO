@@ -1,0 +1,221 @@
+/**
+ * Classe Game - le moteur du jeu d'aventure Zuul.
+ *
+ * @author Gaillet Leo
+ */
+public class GameEngine {
+
+    private Room currentRoom;
+    private Parser parser;
+    private UserInterface userInterface;
+    
+
+    /**
+     * Constructeur par defaut de la classe Game
+     */
+    public GameEngine() {
+        this.parser = new Parser();
+        this.createRooms();
+    }
+    
+    
+    /**
+     * Affiche les messages lors du d�but du jeu
+     */
+    private void printWelcome() {
+        this.userInterface.println("Welcome to the Enchanted City !");
+        this.userInterface.println("");
+        this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
+        this.userInterface.println("Type 'help' if you need help.");
+        printLocationInfo();
+    }
+    
+
+    private void createRooms() {
+        // Définis les différents endroits possible dans le jeu
+        Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
+            fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
+            forbiddenForest, forbiddenForestCave;
+
+        // Initialise les différentes Rooms
+        kingPalace = new Room("The King's Floor. You are certainly appreciated by the King.", "etages-du-roi.jpg");
+        fortressDungeon = new Room("The Dungeon of the Fortress. It's a privilege to be here.", "dongeon-du-fort.jpg");
+        fortressPrison = new Room("The Prison of the Fortress. It can be some prisoners in there.", "prison-du-fort.jpg");
+        fortressUnderground = new Room("The Basement of the Fortress. You may see some bats.", "sous-bassements-du-fort.jpg"); 
+        artefactsRoom = new Room("The Artefacts Room. You can feel strange things coming from this place.", "salle-des-artefacts.jpg");
+        portalsRoom = new Room("The portal room. Portals may teleport you, even if the way by foot is impossible", "salle-des-portails.jpg");
+        fortressYard = new Room("The Fortress Yard. See how beautiful are flowers around here.", "jardin-du-fort.jpg");
+        fortressEntrance = new Room("The Entrance of The Fortress. Why is this door so tall ?", "entree-du-fort.jpg");
+        silverRiver = new Room("The Silver River. Is this silver or just the snow falling on it ?", "riviere-d-argent.jpg");
+        joyfulAvenue = new Room("The Joyful Avenue. This avenue goes so far away that I can't see the end.", "avenue-de-la-joie.jpg");
+        cascadesOfDiamonds = new Room("The Cascades of Diamondstones, The water is so turquoise that I can't see the difference with the color of the diamond", "cascade-aux-diamants.jpg");
+        secretCascadeOfDiamonds = new Room("The Secret Place of the Cascade of Diamonds, Who could pretend that under the cascade it would be an door ?", "salle-secrete-cascade-aux-diamants.jpg");
+        forbiddenForest = new Room("The Forbidden Forest. The only thing that I can say about this place is it's make me goosebumps", "foret-interdite.jpg");
+        forbiddenForestCave = new Room("The Cave of The Forbidden Forest. This place is filled by the Darkness", "grotte-de-la-foret-interdite.jpg");
+
+
+        // Affecte les différentes sorties de salles pour chaque salles
+        kingPalace.setExit("down", fortressDungeon);
+
+        fortressPrison.setExit("east", fortressDungeon);
+        
+        fortressDungeon.setExit("west", fortressPrison);
+        fortressDungeon.setExit("up", kingPalace);
+        fortressDungeon.setExit("down", fortressUnderground);
+        fortressDungeon.setExit("south", fortressYard);
+
+        fortressUnderground.setExit("up", fortressDungeon);
+
+        artefactsRoom.setExit("east", fortressYard);
+
+        fortressYard.setExit("south", fortressEntrance);
+        fortressYard.setExit("north", fortressDungeon);
+        fortressYard.setExit("west", artefactsRoom);
+        fortressYard.setExit("east", portalsRoom);
+
+        portalsRoom.setExit("west", fortressYard);
+
+        fortressEntrance.setExit("north", fortressYard);
+        fortressEntrance.setExit("south", joyfulAvenue);
+
+        silverRiver.setExit("east", joyfulAvenue);
+
+        joyfulAvenue.setExit("north", fortressEntrance);
+        joyfulAvenue.setExit("east", cascadesOfDiamonds);
+        joyfulAvenue.setExit("west", silverRiver);
+        joyfulAvenue.setExit("south", forbiddenForest);
+
+        cascadesOfDiamonds.setExit("west", joyfulAvenue);
+        cascadesOfDiamonds.setExit("down", secretCascadeOfDiamonds);
+
+        forbiddenForest.setExit("north", joyfulAvenue);
+        forbiddenForest.setExit("down", forbiddenForestCave);
+
+        secretCascadeOfDiamonds.setExit("up", cascadesOfDiamonds);
+
+        forbiddenForestCave.setExit("up", forbiddenForest);
+
+        // D�fini la salle de d�part
+        this.currentRoom = fortressEntrance;
+    }
+    
+    
+    /**
+     * Affiche les commandes possibles
+     */
+    private void printHelp() {
+        this.userInterface.println("Your commands are : " + parser.getCommandString());
+    }
+    
+    
+    /**
+     * Affiche la pi�ce actuelle et ses sorties
+     */
+    private void printLocationInfo() {
+        this.userInterface.println(this.currentRoom.getLongDescription());
+    }
+    
+    
+    /**
+     * Permet d'acc�der � une pi�ce selon la direction et affiche la salle o� nous sommes
+     * 
+     * @param command Direction dans laquelle aller 
+     */
+    private void goRoom(final Command command) {
+        if (!command.hasSecondWord()){
+            this.userInterface.println("Go where ?");
+            return;
+        }
+        
+        Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
+        
+        if (nextRoom == null){
+            this.userInterface.println("There is no door !");
+            return;
+        }
+        
+        this.currentRoom = nextRoom;
+        
+        printLocationInfo();
+    }
+    
+    
+    /**
+     * Permet de quitter le jeu
+     * 
+     * @param command Commande ecrite par l'utilisateur
+     * @return Vraie si le joueur écrit quitter ou faux si il ya un second mot
+     */
+    private boolean quit(final Command command) {
+        if (command.hasSecondWord()){
+            this.userInterface.println("Quit what?");
+            return false;
+        }else{
+            this.userInterface.println("Thank you for playing.  Good bye.");
+            this.userInterface.enable(false);
+            return true;
+        }// else
+    } 
+    
+    /**
+     * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
+     */
+    private void look(Command command) {
+        if(command.hasSecondWord())
+            this.userInterface.println("I don't know how to look at something in particular yet.");
+        else
+            this.userInterface.println(this.currentRoom.getLongDescription());
+    }
+     
+    /**
+     * Permet d'afficher que nous avons mang�
+     */
+    private void eat() {
+        this.userInterface.println("You have eaten now and you are not hungry any more.");
+    }
+
+    /**
+     * Permet d'executer une commande saisir par l'utilisateur
+     * 
+     * @param command Commande que l'utilisateur a ecrit
+     * @return Si la commande saisie arrete le jeu
+     */
+    public void interpretCommand(final String rawCommand) {
+        this.userInterface.println( "> " + rawCommand );
+        Command command = this.parser.getCommand( rawCommand.toLowerCase() );
+
+        if (command.isUnknown()) {
+            this.userInterface.println("I don't know what you mean ...");
+            return;
+        }
+        
+        switch(command.getCommandWord().toLowerCase()) {
+            case "go":
+                goRoom(command);
+                return;
+            case "quit":
+                quit(command);
+                return;
+            case "help":
+                printHelp();
+                return;
+            case "look":
+                look(command);
+                return;
+            case "eat":
+                eat();
+                return;
+            default:
+                this.userInterface.println("Unknown command !");
+                return;
+        }
+    }
+    
+    /**
+     * Permet de d�finir une interface utilisateur au moteur du jeu
+     */
+    public void setGUI(final UserInterface userInterface) {
+        this.userInterface = userInterface;
+        this.printWelcome();
+    }
+}
