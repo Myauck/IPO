@@ -699,5 +699,31 @@ Nous devons donc modifier `getItemString()` dans la classe `Room`:
     
 ```
 
+<hr>
 
+###### Exercice 7.21.1
+
+Pour faire correctement fonctionner la fonction `look()` dans `GameEngine` pour faire en sorte que si un second mot est donné, on puisse afficher l'item disponible dans la salle en question
+
+```java
+/**
+ * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
+ */
+private void look(Command command) {
+    if(command.hasSecondWord()) {
+        String commandWord = command.getSecondWord();
+        if(this.currentRoom.getItem() != null) {
+            if(this.currentRoom.getItem().getName().equalsIgnoreCase(commandWord)) {
+                this.userInterface.println(this.currentRoom.getItemString());
+            }
+            else
+                this.userInterface.println("Item not found");
+        }
+        else
+            this.userInterface.println(this.currentRoom.getItemString());
+    }
+    else
+        this.userInterface.println(this.currentRoom.getLongDescription());
+}
+```
 

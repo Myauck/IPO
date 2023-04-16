@@ -161,8 +161,18 @@ public class GameEngine {
      * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
      */
     private void look(Command command) {
-        if(command.hasSecondWord())
-            this.userInterface.println("I don't know how to look at something in particular yet.");
+        if(command.hasSecondWord()) {
+            String commandWord = command.getSecondWord();
+            if(this.currentRoom.getItem() != null) {
+                if(this.currentRoom.getItem().getName().equalsIgnoreCase(commandWord)) {
+                    this.userInterface.println(this.currentRoom.getItemString());
+                }
+                else
+                    this.userInterface.println("Item not found");
+            }
+            else
+                this.userInterface.println(this.currentRoom.getItemString());
+        }
         else
             this.userInterface.println(this.currentRoom.getLongDescription());
     }
