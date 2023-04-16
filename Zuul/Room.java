@@ -19,6 +19,7 @@ public class Room
     private final String description;
     private HashMap<String, Room> exits = new HashMap<String, Room>();
     private final String imageName;
+    private Item item;
     
     
     /**
@@ -27,11 +28,10 @@ public class Room
      * 
      * @param description Description de la salle instanciée
      */
-    public Room(final String description,final String imageName) {
+    public Room(final String description, final String imageName) {
         this.description = description;
         this.imageName = imageName;
     }
-    
     
     /**
      * Getter qui r�cup�re la description de la salle
@@ -55,7 +55,6 @@ public class Room
     public Room getExit(final String direction) {
         return this.exits.get(direction.toLowerCase());
     }
-    
     
     /**
      * Setter qui affecte une nouvelle salle de sortie en fonction de la direction que l'on a choisie
@@ -88,7 +87,19 @@ public class Room
      * @return Description compl�te de la salle instanci�e
      */
     public String getLongDescription() {
-        return getDescription() + "\n" + this.getExitsString();
+        return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
     }
     
-} // Room
+    public Item getItem() {
+        return this.item;
+    }
+    
+    public void setItem(final Item item) {
+        this.item = item;
+    }
+    
+    public String getItemString() {
+        return this.item == null ? "No item here" : "Available item: " + this.item.getName();
+    }
+    
+}

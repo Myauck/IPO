@@ -602,3 +602,81 @@ Et modifions la fonction `actionPerformed()`:
 }
 ```
 
+<hr>
+
+###### Exercice 7.20
+
+Pour ajouter un item nous devons d'abord créer une classe Item : 
+
+`Item.java` : 
+
+```java
+
+/**
+ * Décrivez votre classe Item ici.
+ *
+ * @author Gaillet Leo
+ * @version 23/04/16
+ */
+public class Item
+{
+    private final String name;
+    private final String description;
+    private final int weight;
+    
+    /**
+     * Constructeur d'objets de classe Item
+     */
+    public Item(final String name, final String description, final int weight) {
+        this.name = name;
+        this.description = description;
+        this.weight = weight;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+    
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public int getWeight() {
+        return this.weight;
+    }
+}
+```
+
+Ensuite dans `Room` ajoutons :
+
+```java
+
+    private Item item;
+
+    public Item getItem() {
+        return this.item;
+    }
+    
+    public void setItem(final Item item) {
+        this.item = item;
+    }
+    
+    public String getItemString() {
+        return this.item == null ? "No item here" : "Available item: " + this.item.getName();
+    }
+    
+```
+
+Et modifions la fonction `getLongDescription()`:
+
+```java
+	public String getLongDescription() {
+        //BEFORE:
+        //return getDescription() + "\n" + getExitsString();
+        //AFTER:
+        return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
+    }
+```
+
+
+
