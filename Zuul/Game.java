@@ -10,18 +10,18 @@ public class Game {
     
 
     /**
-     * Constructeur par défaut de la classe Game
+     * Constructeur par dï¿½faut de la classe Game
      */
-    public Game () {
+    public Game() {
         this.parser = new Parser();
         this.createRooms();
     }
     
     
     /**
-     * Affiche les messages lors du début du jeu
+     * Affiche les messages lors du dï¿½but du jeu
      */
-    private void printWelcome () {
+    private void printWelcome() {
         System.out.println("Welcome to the Enchanted City !");
         System.out.println("");
         System.out.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
@@ -30,7 +30,7 @@ public class Game {
     }
     
 
-    private void createRooms () {
+    private void createRooms() {
         // DÃ©finis les diffÃ©rents endroits possible dans le jeu
         Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
             fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
@@ -94,7 +94,7 @@ public class Game {
 
         forbiddenForestCave.setExit("up", forbiddenForest);
 
-        // Défini la salle de départ
+        // Dï¿½fini la salle de dï¿½part
         this.currentRoom = fortressEntrance;
     }
     
@@ -110,7 +110,7 @@ public class Game {
     
     
     /**
-     * Affiche la pièce actuelle et ses sorties
+     * Affiche la piï¿½ce actuelle et ses sorties
      */
     private void printLocationInfo()
     {
@@ -119,7 +119,7 @@ public class Game {
     
     
     /**
-     * Permet d'accéder à une pièce selon la direction et affiche la salle où nous sommes
+     * Permet d'accï¿½der ï¿½ une piï¿½ce selon la direction et affiche la salle oï¿½ nous sommes
      * 
      * @param instruction Direction dans laquelle aller 
      */
@@ -161,7 +161,7 @@ public class Game {
     
     
     /**
-     * Permet d'afficher la description complète de la salle dans laquelle nous sommes actuellement
+     * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
      */
     private void look(Command command) {
         if(command.hasSecondWord())
@@ -172,7 +172,7 @@ public class Game {
     
         
     /**
-     * Permet d'afficher que nous avons mangé
+     * Permet d'afficher que nous avons mangï¿½
      */
     private void eat() {
         System.out.println("You have eaten now and you are not hungry any more.");
@@ -180,10 +180,10 @@ public class Game {
         
     
     /**
-     * Permet d'exécuter une commande saisir par l'utilisateur
+     * Permet d'executer une commande saisir par l'utilisateur
      * 
-     * @param command Commande que l'utilisateur a écrit
-     * @return Si la commande saisie arrête le jeu
+     * @param command Commande que l'utilisateur a ecrit
+     * @return Si la commande saisie arrete le jeu
      */
     private boolean processCommand(final Command command)
     {

@@ -1,6 +1,5 @@
 #BlueJ class context
 comment0.target=CommandWords
-comment0.text=\r\n\ This\ class\ is\ part\ of\ the\ "World\ of\ Zuul"\ application.\ \r\n\ "World\ of\ Zuul"\ is\ a\ very\ simple,\ text\ based\ adventure\ game.\ \ \r\n\ \r\n\ This\ class\ holds\ an\ enumeration\ table\ of\ all\ command\ words\ known\ to\ the\ game.\r\n\ It\ is\ used\ to\ recognise\ commands\ as\ they\ are\ typed\ in.\r\n\r\n\ @author\ \ Michael\ Kolling\ and\ David\ J.\ Barnes\ +\ D.Bureau\ +\ L.Gaillet\r\n\ @version\ 2008.03.30\ +\ 2019.09.25\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ 2023.02.19\r\n
 comment1.params=
 comment1.target=CommandWords()
 comment1.text=\r\n\ Constructeur\ qui\ permet\ d'initialiser\ les\ diff\u00E9rentes\ commandes\ possibles.\r\n
@@ -10,4 +9,7 @@ comment2.text=\r\n\ V\u00E9rifie\ si\ la\ cha\u00EEne\ donn\u00E9e\ en\ param\u0
 comment3.params=
 comment3.target=void\ showAll()
 comment3.text=\r\n\ Permet\ d'afficher\ l'ensemble\ des\ commandes\ enregistr\u00E9es.\r\n
-numComments=4
+comment4.params=
+comment4.target=java.lang.String\ getCommandList()
+comment4.text=\r\n\ Permet\ de\ r\u00E9cup\u00E9rer\ l'ensemble\ des\ commandes\ disponibles\ dans\ le\ jeu\r\n\ @return\ Commandes\ disponibles\r\n
+numComments=5

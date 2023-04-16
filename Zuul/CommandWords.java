@@ -8,6 +8,9 @@
  * @author  Michael Kolling and David J. Barnes + D.Bureau + L.Gaillet
  * @version 2008.03.30 + 2019.09.25                        + 2023.02.19
  */
+
+import java.lang.StringBuilder;
+
 public class CommandWords
 {
     private final String[] registeredCommands;
@@ -48,5 +51,18 @@ public class CommandWords
             System.out.print(command + " ");
         }
         System.out.println("");
+    }
+    
+    /**
+     * Permet de récupérer l'ensemble des commandes disponibles dans le jeu
+     * @return Commandes disponibles
+     */
+    public String getCommandList() {
+        StringBuilder strB = new StringBuilder();
+        for(String command : registeredCommands) {
+            strB.append(command);
+            strB.append(" ");
+        }
+        return strB.toString().trim();
     }
 }

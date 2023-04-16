@@ -1,10 +1,17 @@
 import java.util.HashMap;
 
-/**
- * Classe Room - Un lieu du jeu d'aventure Zuul.
+/*
+ * Class Room - a room in an adventure game.
  *
- * @author Léo GAILLET
- * @version 1
+ * This class is part of the "World of Zuul" application. 
+ * "World of Zuul" is a very simple, text based adventure game.  
+ *
+ * A "Room" represents one location in the scenery of the game.  It is 
+ * connected to other rooms via exits.  For each existing exit, the room 
+ * stores a reference to the neighboring room.
+ * 
+ * @author  Michael Kolling, David J. Barnes, LÃ©o Gaillet
+ * @version 1.0 (February 2002) DBMOD:04/04/2008, 2019, 2023
  */
 public class Room
 {
@@ -25,7 +32,7 @@ public class Room
     
     
     /**
-     * Getter qui récupère la description de la salle
+     * Getter qui rï¿½cupï¿½re la description de la salle
      * 
      * @return Description de la salle
      */
@@ -35,10 +42,10 @@ public class Room
  
     
     /**
-     * Getter qui récupère la salle d'une sortie en fonction de la direction de la sortie
+     * Getter qui rï¿½cupï¿½re la salle d'une sortie en fonction de la direction de la sortie
      * 
      * @param direction Direction de la sortie qu'on cherche
-     * @return Salle se trouvant à la sortie recherchée
+     * @return Salle se trouvant ï¿½ la sortie recherchï¿½e
      */
     public Room getExit(final String direction) {
         return this.exits.get(direction.toLowerCase());
@@ -58,21 +65,22 @@ public class Room
     
     
     /**
-     * Getter qui récupère les sorties disponibles dans la salle instanciée
+     * Getter qui rï¿½cupï¿½re les sorties disponibles dans la salle instanciï¿½e
      * 
-     * @return Chaîne comportant la liste des sorties disponibles
+     * @return Chaï¿½ne comportant la liste des sorties disponibles
      */
     public String getExitsString() {
         String availableExits = "Available Exits : ";
-        for(String keys : this.exits.keySet()) availableExits += keys + " ";
+        for(String keys : this.exits.keySet())
+            availableExits += keys + " ";
         return availableExits;
     }
     
 
     /**
-     * Getter qui permet de récupérer l'intégralité des informations de la salle
+     * Getter qui permet de rï¿½cupï¿½rer l'intï¿½gralitï¿½ des informations de la salle
      * 
-     * @return Description complète de la salle instanciée
+     * @return Description complï¿½te de la salle instanciï¿½e
      */
     public String getLongDescription() {
         return getDescription() + "\n" + this.getExitsString();

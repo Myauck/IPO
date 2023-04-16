@@ -1,5 +1,3 @@
-
-
 # Compte Rendu d'IPO
 
 ## Informations
@@ -18,7 +16,7 @@ Au fil de l'aventure, le joueur découvre des indices sur l'identité des sorcie
 
 <u>Carte du jeu</u> :
 
-![](C:\Users\leoga\Documents\rooms.drawio.png)
+![](C:\Users\leoga\Projects\IPO\Zuul\rapports\diagrams\rooms.drawio.png)
 
 <u>Détails des lieux</u> :
 
@@ -78,14 +76,14 @@ Ajoutons quelques éléments pour augmenter notre nombre de sorties possibles:
 
 ```java
 public Room {
-    
+
     // [...]
-    
+
     public Room upRoom;
     public Room downRoom;
-    
+
     // [...]
-    
+
     public void setExits(final Room northRoom, final Room southRoom, final Room eastRoom, final Room westRoom, final Room upRoom, final Room downRoom) {
         this.northRoom = northRoom;
         this.southRoom = southRoom;
@@ -94,7 +92,7 @@ public Room {
         this.upRoom = upRoom;
         this.downRoom = downRoom;
     }
-    
+
 }
 ```
 
@@ -132,16 +130,16 @@ Dans la classe `Room` créons une méthode `getExitString()`
  */
 public String getExitString() {
    String exits = "Available Exits : ";
-    
+
    if(this.northExit != null) exits += "north ";
    if(this.southExit != null) exits += "south ";
    if(this.eastExit != null) exits += "east ";
    if(this.westExit != null) exits += "west ";
-   
+
    // ainsi que les deux nouvelles sorties
    if(this.upExit != null) exits += "up ";
    if(this.downExit != null) exits += "down";
-    
+
    return exits;
 }
 ```
@@ -151,11 +149,12 @@ public String getExitString() {
 ###### Exercice 7.8
 
 Dans le fichier `Room.java` Nous pouvons ajouter/remplacer :
+
 ```java
 import java.util.HashMap;
 
 public class Room {
-    
+
     // [...]
 
     private final HashMap<String, Room> exits = new HashMap<String, Room>();   
@@ -264,7 +263,7 @@ public String getLongDescription() {
 
 ###### Exercice 7.12
 
-![](C:\Users\leoga\Documents\diagrammes-programme.drawio.png)
+![](C:\Users\leoga\Projects\IPO\Zuul\rapports\diagrams\diagrammes-programme.drawio.png)
 
 <hr>
 
@@ -290,7 +289,7 @@ private void look(Command command) {
     if(command.hasSecondWord()) 
         System.out.println("I don't know how to look at something in particular yet");
     else
-    	System.out.println(this.currentRoom.getLongDescription());
+        System.out.println(this.currentRoom.getLongDescription());
 }
 ```
 
@@ -313,7 +312,7 @@ private boolean processCommand(final Command command)
         System.out.println("I don't know what you mean ...");
         return false;
     }
-    
+
     switch(command.getCommandWord().toLowerCase()) {
         case "go":
             goRoom(command);
@@ -365,7 +364,7 @@ private boolean processCommand(final Command command)
         System.out.println("I don't know what you mean ...");
         return false;
     }
-    
+
     switch(command.getCommandWord().toLowerCase()) {
         case "go":
             goRoom(command);
@@ -443,7 +442,98 @@ Donc quand nous ajouterons une nouvelle commande, nous écrirons dans la classe 
 
 avec `X` qui correspond à l'indice suivant le dernier a être utilisé pour stocker une commande.
 
+<hr>
 
+###### Exercice 7.18
+
+Pour ajouter la liste des commandes, nous devons tout d'abord placer le code au bon endroit, ici, puisqu'il s'agit de récupérer des commandes, le mieux c'est de l'intégrer dans le fichier `CommandWords.java` où se trouve la classe `CommandWords`.
+
+```java
+/**
+ * Permet de récupérer l'ensemble des commandes disponibles dans le jeu
+ * @return Commandes disponibles
+ */
+public String getCommandList() {
+    String commands = "";
+    for(String command : registeredCommands) {
+        commands += command + " ";
+    }
+    return commands;
+}
+```
+
+On se permet de modifier aussi dans le fichier `Parser`. On remplace :
+
+```java
+public void showCommands() {
+    this.commands.showAll();
+}
+```
+
+Par
+
+```java
+public CommandWords getCommandWords() {
+    return this.commands;
+}
+```
+
+Et dans `Game` on modifie :
+
+```java
+/**
+ * Affiche les commandes possibles
+ */
+private void printHelp()
+{
+    System.out.println("Your commands are :");
+    // On commente cette instruction : parser.showCommands();
+    System.out.println(parser.getCommandWords().getCommandList()); // On ajoute celle-ci
+}
+```
+
+<hr>
+
+###### Exercice 7.18.1
+
+Les différences qu'il y a entre `zuul-better` et le `zuul-bad` sont multiples :
+
+- Dans la classe `Room`, il y a un nouveau paramètre demandé: `String imageName` s'agit certainement d'une image qu'on va devoir charger pour représenter la salle instanciée. Il y a aussi le getter `String getImageName()`
+- Dans la classe `Room` on a accès à présent d'un nouveau getter `String getShortDescription()` qui permet probablement, comme son nom l'indique, de récupérer une petite description de la salle. 
+- Dans la classe `Parser`, nous n'utilisons plus l'interface `Scanner` mais un `StringTokenizer` c'est à dire qu'on aura, probablement, plus à taper sur le clavier pour entrer les différentes commandes.
+- On remarque aussi que toutes les sorties (affichage de messages) c'est à dire les appels de procédure `System.out.println(msg);` sont désormais utilisées que dans la classe `Game`. Il s'agit donc d'un refactorisation des appels de différentes fonctions. 
+
+<hr>
+
+###### Exercice 7.18.2
+
+Le `StringBuilder` est une classe qui est un utilitaire pour les chaînes de caractères, un peu comme `Arrays` pour les listes.
+`StringBuilder` a donc, logiquement, plusieurs fonctionnalités. Nous pouvons par exemple modifier l'exercice [7.18](#Exercice 7.18) en ajoutant les `StringBuilder` :
+
+On importe avec `import java.util.StringBuilder;`.
+
+```java
+/**
+ * Permet de récupérer l'ensemble des commandes disponibles dans le jeu
+ * @return Commandes disponibles
+ */
+public String getCommandList() {
+    StringBuilder strBuilder = new StringBuilder();
+    for(String command : registeredCommands) {
+        strBuilder.append(command);
+        strBuilder.append(" ");
+    }
+    return strBuilder.toString().trim();
+}
+```
+
+<hr>
+
+###### Exercice 7.18.3
+
+###### Exercice 7.18.4
+
+###### Exercice 7.18.5 OPTIONNEL TEMPORAIREMENT
 
 
 
