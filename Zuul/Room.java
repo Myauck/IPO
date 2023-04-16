@@ -17,9 +17,9 @@ public class Room
 {
     
     private final String description;
-    private HashMap<String, Room> exits = new HashMap<String, Room>();
+    private final HashMap<String, Room> exits = new HashMap<String, Room>();
     private final String imageName;
-    private Item item;
+    private final HashMap<String, Item> items = new HashMap<String, Item>();
     
     
     /**
@@ -90,16 +90,23 @@ public class Room
         return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
     }
     
-    public Item getItem() {
-        return this.item;
+    public Item getItem(final String itemName) {
+        return this.items.get(itemName);
     }
     
-    public void setItem(final Item item) {
-        this.item = item;
+    public void addItem(final Item item) {
+        this.items.put(item.getName().toLowerCase(), item);
     }
     
     public String getItemString() {
-        return this.item == null ? "No item here" : "Available item: " + this.item.getLongDescription();
+        if(items.size() == 0)
+            return "No items here";
+        
+        StringBuilder itemContent = new StringBuilder();
+        for(Item item : items.values()) {
+            itemContent.append("\"" + item.getName() + "\": ");
+            itemContent.append("\t" + item.getLongDescription() + "\n");
+        }
+        return "Available items (" + items.size() + ") :";
     }
-    
 }

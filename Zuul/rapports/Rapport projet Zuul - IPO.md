@@ -727,3 +727,67 @@ private void look(Command command) {
 }
 ```
 
+<hr>
+
+###### Exercice 7.22
+
+Pour avoir la possibilité d'ajouter plusieurs items dans la salle nous pouvons utiliser une `HashMap` ou une `ArrayList` selon la façon dont nous allons chercher les items dans une salle. Ici nous allons chercher les items selon leur nom qui a été défini, il est donc préférable d'utiliser une `HashMap<String, Item>` avec `String` qui correspond au type de la valeur que nous allons entrer dans la `HashMap` pour trouver l'`Item` que nous recherchons.
+
+Nous allons effectuer quelques modifications dans la classe `Room`:
+
+```java
+	/*
+	Nous retirons l'attribut
+	private Item item;
+	
+	pour le remplacer par:
+	*/	
+    private final HashMap<String, Item> items = new HashMap<String, Item>();
+
+    public Item getItem(final String itemName) {
+        return this.items.get(itemName);
+    }
+
+	/*
+	On retire la fonction
+	public void setItem(final Item item)
+	*/
+    
+    public void addItem(final Item item) {
+        this.items.put(item.getName().toLowerCase(), item);
+    }
+    
+    public String getItemString() {
+        if(items.size() == 0)
+            return "No items here";
+        
+        StringBuilder itemContent = new StringBuilder();
+        for(Item item : items.values()) {
+            itemContent.append("\"" + item.getName() + "\": ");
+            itemContent.append("\t" + item.getLongDescription() + "\n");
+        }
+        return "Available items (" + items.size() + ") :";
+    }
+```
+
+Et nous devons aussi modifier la fonction `look` dans la classe `GameEngine` : 
+
+```java
+/**
+ * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
+ */
+private void look(Command command) {
+    if(command.hasSecondWord()) {
+        String commandWord = command.getSecondWord();
+        if(this.currentRoom.getItem(commandWord) != null)
+            this.userInterface.println(this.currentRoom.getItem(commandWord).getLongDescription());
+        else
+            this.userInterface.println("Item not found");
+    }
+    else
+        this.userInterface.println(this.currentRoom.getLongDescription());
+}
+```
+
+
+

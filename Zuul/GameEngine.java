@@ -163,15 +163,10 @@ public class GameEngine {
     private void look(Command command) {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
-            if(this.currentRoom.getItem() != null) {
-                if(this.currentRoom.getItem().getName().equalsIgnoreCase(commandWord)) {
-                    this.userInterface.println(this.currentRoom.getItemString());
-                }
-                else
-                    this.userInterface.println("Item not found");
-            }
+            if(this.currentRoom.getItem(commandWord) != null)
+                this.userInterface.println(this.currentRoom.getItem(commandWord).getLongDescription());
             else
-                this.userInterface.println(this.currentRoom.getItemString());
+                this.userInterface.println("Item not found");
         }
         else
             this.userInterface.println(this.currentRoom.getLongDescription());
