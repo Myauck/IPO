@@ -258,11 +258,11 @@ public class GameEngine {
      * @param command Commande "drop" que le joueur a saisi
      */
     public void drop(final Command command) {
-        if(command.hasSecondWord()) {
-            this.userInterface.println("Wrong prompt, there is any argument !");
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("Drop what ?");
             return;
         }
-        this.userInterface.println(this.player.dropItem());
+        this.userInterface.println(this.player.dropItem(command.getSecondWord()));
     }
     
     

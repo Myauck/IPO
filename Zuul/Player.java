@@ -1,4 +1,5 @@
 import java.util.Stack;
+import java.util.HashMap;
 
 /**
  * Les differents attributs et fonctions liées au Joueur, permettant
@@ -13,7 +14,7 @@ public class Player {
     private final String name;
     private Room currentRoom;
     private Stack<Room> previousRooms;
-    private Item item;
+    private HashMap<String, Item> items;
     
     /**
      * Constructeur de la classe Player
@@ -22,6 +23,7 @@ public class Player {
     public Player(final String name){
         this.name = name;
         this.previousRooms = new Stack<Room>();
+        this.items = new HashMap<String, Item>();
     }
     
     /**
@@ -76,26 +78,23 @@ public class Player {
     }
     
     public String takeItem(final String itemName) {
-        if(this.item != null)
-            return "You already have an item on your player !";
-        
         Item foundItem = currentRoom.getItem(itemName);
         if(foundItem == null) {
             return "Item in this room is not found !";
         }
         
-        this.item = foundItem;
+        this.items.put(foundItem.getName().toLowerCase(), foundItem);
         this.currentRoom.removeItem(foundItem);
         return "You took the item " + foundItem.getName() + " !"; 
     }
     
-    public String dropItem() {
-        if(this.item == null)
-            return "You have any item on your player !";
+    public String dropItem(final String itemName) {
+        if(!this.items.containsKey(itemName.toLowerCase()))
+            return "You have any item named like this on your player !";
         
-        Item item = this.item;
-        this.currentRoom.addItem(this.item);
-        this.item = null;
+        Item item = this.items.get(itemName.toLowerCase());
+        this.currentRoom.addItem(item);
+        this.items.remove(itemName.toLowerCase());
         return "You dropeed the item " + item.getName() + " in the room !"; 
     }
     

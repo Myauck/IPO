@@ -1389,7 +1389,13 @@ public String dropItem() {
 }
 ```
 
-Et dans la classe `GameEngine` nous ajoutons celle-là :
+Attention ! N'oublions pas d'ajouter un attribut de type `Item` dans la classe `Player`:
+
+```java
+private Item item;
+```
+
+Et dans la classe `GameEngine` nous ajoutons ces deux procédures là :
 
 ```java
 /**
@@ -1416,4 +1422,70 @@ public void drop(final Command command) {
     this.userInterface.println(this.player.dropItem());
 }
 ```
+
+<hr>
+
+###### Exercice 7.31
+
+La différence entre cet exercice et le précédent, c'est que dans cette situation, nous pouvons prendre plusieurs objet sur nous, ce qui va modifier pas mal notre programme :
+
+Tout vas quasiment se passer dans la classe `Player`, en effet, le traitement se passe sur le joueur, car c'est lui qui fait l'action, donc il s'agit de la classe `Player` qui va être modifiée.
+
+Tout d'abord retirons cet attribut
+
+```java
+private Item item;
+```
+
+par:
+
+```java
+private final HashMap<String, Item> items = new HashMap<String, Item>();
+// Sans oublier d'importer avec "import java.util.HashMap";
+```
+
+et remplaçons nos deux fonctions `takeItem` et `dropItem` dans `Player` par ça : 
+
+```java
+public String takeItem(final String itemName) {
+    Item foundItem = currentRoom.getItem(itemName);
+    if(foundItem == null) {
+        return "Item in this room is not found !";
+    }
+
+    this.items.put(foundItem.getName().toLowerCase(), foundItem);
+    this.currentRoom.removeItem(foundItem);
+    return "You took the item " + foundItem.getName() + " !"; 
+}
+
+public String dropItem(final String itemName) {
+    if(!this.items.containsKey(itemName.toLowerCase()))
+        return "You have any item named like this on your player !";
+
+    Item item = this.items.get(itemName.toLowerCase());
+    this.currentRoom.addItem(item);
+    this.items.remove(itemName.toLowerCase());
+    return "You dropeed the item " + item.getName() + " in the room !"; 
+}
+```
+
+Et puisque nous avons modifié la signature de `public String dropItem()` par `public String dropItem(final String itemName)` Nous devons aller dans la classe `GameEngine` pour effectuer quelques modifications (car la procédure `drop`qui se trouve dans `GameEngine` appelle la fonction `dropItem` dans la classe `Player`) :
+
+Dans la classe `GameEngine` modifions alors `drop`: 
+
+```java
+public void drop(final Command command) {
+    // Nous avons inversé la condition (avec le point d'exclamation '!')
+    if(!command.hasSecondWord()) {
+        this.userInterface.println("Drop what ?");
+        return;
+    }
+    // De :
+    // this.userInterface.println(this.player.dropItem());
+    // Par :
+    this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+}
+```
+
+
 
