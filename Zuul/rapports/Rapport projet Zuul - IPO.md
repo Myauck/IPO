@@ -1086,3 +1086,8 @@ public void test(final Command command) {
 }
 ```
 
+<hr>
+
+###### Exercice 7.28.2
+
+Pour créer nos fichier de test de commandes, nous devons aller dans le dossier de notre projet et créer les fichiers nous même, `court.txt`, `visite.txt` et `ideal.txt`, ensuite rouvrir BlueJ, et normalement, nous sommes censé avoir les 3 fichiers automatiquement implémentés dans notre projet.
