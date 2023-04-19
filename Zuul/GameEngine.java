@@ -1,4 +1,8 @@
+import java.util.Scanner;
 import java.util.Stack;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 
 /**
  * Classe Game - le moteur du jeu d'aventure Zuul.
@@ -11,7 +15,6 @@ public class GameEngine {
     private final Stack<Room> previousRooms = new Stack<Room>();
     private Parser parser;
     private UserInterface userInterface;
-    
 
     /**
      * Constructeur par defaut de la classe Game
@@ -21,9 +24,8 @@ public class GameEngine {
         this.createRooms();
     }
     
-    
     /**
-     * Affiche les messages lors du dï¿½but du jeu
+     * Affiche les messages lors du debut du jeu
      */
     private void printWelcome() {
         this.userInterface.println("Welcome to the Enchanted City !");
@@ -34,8 +36,10 @@ public class GameEngine {
         if(this.currentRoom.getImageName() != null)
             this.userInterface.showImage(this.currentRoom.getImageName());
     }
-    
 
+    /**
+     * Permet d'instancier les differentes salles et les differents objets du jeu
+     */
     private void createRooms() {
         
         // DÃ©finis les diffÃ©rents endroits possible dans le jeu
@@ -104,7 +108,7 @@ public class GameEngine {
         // Défini la salle de départ
         this.currentRoom = fortressEntrance;
         
-        // Définis les différents item dans le jeu
+        // Défini les différents item dans le jeu
         Item fleur, chaise, epee;
         
         fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
@@ -116,7 +120,6 @@ public class GameEngine {
         fortressDungeon.addItem(epee);
     }
     
-    
     /**
      * Affiche les commandes possibles
      */
@@ -126,7 +129,7 @@ public class GameEngine {
     
     
     /**
-     * Affiche la piï¿½ce actuelle et ses sorties
+     * Affiche la piece actuelle et ses sorties
      */
     private void printLocationInfo() {
         this.userInterface.println(this.currentRoom.getLongDescription());
@@ -136,9 +139,8 @@ public class GameEngine {
     
     
     /**
-     * Permet d'accï¿½der ï¿½ une piï¿½ce selon la direction et affiche la salle oï¿½ nous sommes
-     * 
-     * @param command Direction dans laquelle aller 
+     * Permet d'acceder a une piece selon la direction et affiche la salle ou nous sommes
+     * @param command Direction dans laquelle le joueur souhaite aller
      */
     private void goRoom(final Command command) {
         if (!command.hasSecondWord()){
@@ -162,48 +164,47 @@ public class GameEngine {
     
     /**
      * Permet de quitter le jeu
-     * 
      * @param command Commande ecrite par l'utilisateur
-     * @return Vraie si le joueur Ã©crit quitter ou faux si il ya un second mot
+     * @return Vraie si le joueur ecrit quitter ou faux si il ya un second mot
      */
     private boolean quit(final Command command) {
         if (command.hasSecondWord()){
             this.userInterface.println("Quit what?");
             return false;
-        }else{
-            this.userInterface.println("Thank you for playing.  Good bye.");
-            this.userInterface.enable(false);
-            return true;
-        }// else
+        }
+        
+        this.userInterface.println("Thank you for playing.  Good bye.");
+        this.userInterface.enable(false);
+        return true;
     } 
     
     /**
      * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
+     * @param command Commande look
      */
     private void look(Command command) {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
-            if(this.currentRoom.getItem(commandWord) != null)
-                this.userInterface.println(this.currentRoom.getItem(commandWord).getLongDescription());
-            else
-                this.userInterface.println("Item not found");
+            this.userInterface.println(
+                this.currentRoom.getItem(commandWord) != null ? 
+                    this.currentRoom.getItem(commandWord).getLongDescription() :
+                    "Item not found");
+            return;
         }
-        else
-            this.userInterface.println(this.currentRoom.getLongDescription());
+        
+        this.userInterface.println(this.currentRoom.getLongDescription());
     }
      
     /**
-     * Permet d'afficher que nous avons mangï¿½
+     * Permet d'afficher que nous avons mange
      */
     private void eat() {
         this.userInterface.println("You have eaten now and you are not hungry any more.");
     }
 
     /**
-     * Permet d'executer une commande saisir par l'utilisateur
-     * 
-     * @param command Commande que l'utilisateur a ecrit
-     * @return Si la commande saisie arrete le jeu
+     * Permet d'executer une commande saisie par l'utilisateur
+     * @param rawCommand Commande que l'utilisateur a saisie
      */
     public void interpretCommand(final String rawCommand) {
         this.userInterface.println( "> " + rawCommand );
@@ -233,12 +234,53 @@ public class GameEngine {
             case "back":
                 back(command);
                 return;
+            case "test":
+                test(command);
+                return;
             default:
                 this.userInterface.println("Unknown command !");
                 return;
         }
     }
     
+    
+    /**
+     * Permet de tester un ensemble de commandes enregistrées dans un fichier et les exécute
+     * @param command Commande test lors de l'exécution
+     */
+    public void test(final Command command) {
+
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("You need to choose a file to test commands !");
+            return;
+        }
+        
+        File file = new File(command.getSecondWord() + ".txt");
+
+        if(!file.exists()) {
+            this.userInterface.println("file named " + file.getName() + " is not found !");
+            return;
+        }
+
+        try {
+            Scanner commandScanner = new Scanner(file);
+
+            while(commandScanner.hasNextLine()) {
+                String rawCommand = commandScanner.nextLine();
+                this.interpretCommand(rawCommand);
+            }
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            this.userInterface.println("Unable to read file " + file.getName() + "!");
+            return;
+        }
+    }
+    
+    /**
+     * Permet de retourner dans la salle precedente
+     * @param command Commande back
+     */
     public void back(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("Back what ?");
@@ -256,6 +298,7 @@ public class GameEngine {
     
     /**
      * Permet de définir une interface utilisateur au moteur du jeu
+     * @param userInterface Interface utilisateur necessaire au moteur du jeu
      */
     public void setGUI(final UserInterface userInterface) {
         this.userInterface = userInterface;

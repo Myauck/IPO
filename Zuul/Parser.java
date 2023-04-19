@@ -33,6 +33,8 @@ public class Parser
     /**
      * Get a new command from the user. The command is read by
      * parsing the 'inputLine'.
+     * @param pInputLine texte que l'on souhaite transformer en commande
+     * @return Commande obtenue
      */
     public Command getCommand( final String pInputLine ) 
     {
@@ -64,6 +66,7 @@ public class Parser
 
     /**
      * Returns a String with valid command words.
+     * @return String with all available commands
      */
     public String getCommandString() // was showCommands()
     {

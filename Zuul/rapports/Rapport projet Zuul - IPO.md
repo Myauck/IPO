@@ -16,7 +16,7 @@ Au fil de l'aventure, le joueur découvre des indices sur l'identité des sorcie
 
 <u>Carte du jeu</u> :
 
-![](C:\Users\leoga\Projects\IPO\Zuul\rapports\diagrams\rooms.drawio.png)
+![](https://raw.githubusercontent.com/Myauck/IPO/master/Zuul/rapports/diagrams/rooms.drawio.png)
 
 <u>Détails des lieux</u> :
 
@@ -263,7 +263,7 @@ public String getLongDescription() {
 
 ###### Exercice 7.12
 
-![](C:\Users\leoga\Projects\IPO\Zuul\rapports\diagrams\diagrammes-programme.drawio.png)
+![](https://raw.githubusercontent.com/Myauck/IPO/master/Zuul/rapports/diagrams/diagrammes-programme.drawio.png)
 
 <hr>
 
@@ -973,13 +973,116 @@ public void back(final Command command) {
 
 ```
 
+<hr>
 
+###### Exercice 7.26.1
 
+Pour générer les deux Javadocs, nous avons deja besoin de savoir la différence entre ces deux là
 
+- La javadoc dans  `userdoc` fournie par la commande "*javadoc -d userdoc -author -version \*.java*" est celle qui est utile aux personnes de l'exterieur qui souhaite comprendre le comportement du programme 
+- La javadoc dans `progdoc` fournie par la commande "*javadoc -d progdoc -author -version -private -linksource \*.java*" est celle qui est utile au programmeur et aux développeurs du projet et permet ainsi de ne pas se perdre dans l'ensemble des fonctions créée.
 
+<hr>
 
+###### Exercice 7.28.1
 
+Pour créer une nouvelle commande `test` nous avons d'abord besoin d'intégrer `"test"` dans notre liste de commandes existantes (définies dans la classe `CommandWords`) :
 
+```java
+public class CommandWords
+{
+    private final String[] registeredCommands;
 
+    public CommandWords() {
+        this.registeredCommands = new String[]  {
+            "go", "help", "quit", "look", "eat", "back", "test" // <--- On l'ajoute juste là
+        };
+    }
+    
+    // [...]
+}
+```
 
+Ensuite nous devons l'ajouter dans le multi-bloc conditionnel (les `if`, `else if ` *en boucle*) / `switch` dans la fonction `interpretCommand` dans `GameEngine`:
+
+```java
+public void interpretCommand(final String rawCommand) {
+    this.userInterface.println( "> " + rawCommand );
+    Command command = this.parser.getCommand( rawCommand.toLowerCase() );
+
+    if (command.isUnknown()) {
+        this.userInterface.println("I don't know what you mean ...");
+        return;
+    }
+
+    switch(command.getCommandWord().toLowerCase()) {
+        case "go":
+            goRoom(command);
+            return;
+        case "quit":
+            quit(command);
+            return;
+        case "help":
+            printHelp();
+            return;
+        case "look":
+            look(command);
+            return;
+        case "eat":
+            eat();
+            return;
+        case "back":
+            back(command);
+            return;
+        // Nous l'ajoutons juste là
+        case "test":
+            test(command);
+            return;
+        default:
+            this.userInterface.println("Unknown command !");
+            return;
+    }
+}
+```
+
+Or pour que cela fonctionne, nous devons créer une nouvelle fonction (dans `GameEngine` aussi) qui permettra de faire nos différents `tests` demandés :
+
+```java
+public void test(final Command command) {
+
+    // Vérifie si la commande n'a pas de second mot
+    if(!command.hasSecondWord()) {
+        this.userInterface.println("You need to choose a file to test commands !");
+        return;
+    }
+    
+    // Dans le cas où la commande à un second mot, on poursuit directement ici
+    
+    // Défini un nouveau fichier
+    File file = new File(command.getSecondWord() + ".txt");
+
+    // Vérifie si le fichier n'existe pas
+    if(!file.exists()) {
+        this.userInterface.println("file named " + file.getName() + " is not found !");
+        return;
+    }
+    
+    // Dans le cas où le fichier existe, on continue ici
+
+    try {
+        // Scanne chaque lignes du fichier et les exécute
+        Scanner commandScanner = new Scanner(file);
+
+        while(commandScanner.hasNextLine()) {
+            String rawCommand = commandScanner.nextLine();
+            this.interpretCommand(rawCommand);
+        }
+    }
+    catch (FileNotFoundException e) {
+        // Préviens le joueur que une erreur est survenue au lieu d'afficher une exception
+        this.userInterface.println("Unable to read file " + file.getName() + "!");
+        return;
+    }
+}
+```
 

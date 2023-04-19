@@ -10,7 +10,6 @@ public class Command {
     
     /**
      * Constructeur de la classe Command
-     * 
      * @param commandWord Commande principale saisie par l'utilisateur
      * @param secondWord Commande secondaire saisie par l'utilisateur
      */
@@ -19,9 +18,8 @@ public class Command {
         this.secondWord = secondWord;
     }
     
-
     /**
-     * Getter qui récupère la commande principale
+     * Getter qui recupere la commande principale
      * 
      * @return Commande principale
      */
@@ -29,35 +27,28 @@ public class Command {
         return this.commandWord;
     }
     
-    
     /**
-     * Getter qui récupère la commande secondaire
-     * 
+     * Getter qui recupere la commande secondaire
      * @return Commande secondaire
      */
     public String getSecondWord () {
         return this.secondWord;
     }
 
-    
     /**
-     * Permet de savoir si la commande possède une commande secondaire
-     * 
+     * Permet de savoir si la commande possede une commande secondaire
      * @return Si la commande secondaire existe
      */
     public boolean hasSecondWord () {
         return this.getSecondWord() != null;
     }
     
-
     /**
      * Permet de savoir si la commande principale n'est pas nulle
-     * 
      * @return Si la commande est nulle
      */
     public boolean isUnknown ()
     {
         return this.getCommandWord() == null;
     }
-
 }

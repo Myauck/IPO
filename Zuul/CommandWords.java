@@ -16,23 +16,19 @@ public class CommandWords
     private final String[] registeredCommands;
 
     /**
-     * Constructeur qui permet d'initialiser les différentes commandes possibles.
+     * Constructeur qui permet d'initialiser les diffï¿½rentes commandes possibles.
      */
     public CommandWords() {
-        this.registeredCommands = new String[6];
-        this.registeredCommands[0] = "go";
-        this.registeredCommands[1] = "help";
-        this.registeredCommands[2] = "quit";
-        this.registeredCommands[3] = "look";
-        this.registeredCommands[4] = "eat";
-        this.registeredCommands[5] = "back";
+        this.registeredCommands = new String[]  {
+            "go", "help", "quit", "look", "eat", "back", "test"
+        };
     }
 
     
     /**
-     * Vérifie si la chaîne donnée en paramètre correspond à une commande
-     * 
-     * @return Si la chaîne est bien une commande
+     * Vï¿½rifie si la chaï¿½ne donnï¿½e en paramï¿½tre correspond ï¿½ une commande
+     * @param commandString Commande que l'on cherche a verifier
+     * @return Si la chaï¿½ne est bien une commande
      */
     public boolean isCommand( final String commandString )
     {
@@ -45,7 +41,7 @@ public class CommandWords
     
     
     /**
-     * Permet d'afficher l'ensemble des commandes enregistrées.
+     * Permet d'afficher l'ensemble des commandes enregistrï¿½es.
      */
     public void showAll() {
         for(String command : registeredCommands) {
@@ -55,7 +51,7 @@ public class CommandWords
     }
     
     /**
-     * Permet de récupérer l'ensemble des commandes disponibles dans le jeu
+     * Permet de rï¿½cupï¿½rer l'ensemble des commandes disponibles dans le jeu
      * @return Commandes disponibles
      */
     public String getCommandList() {
