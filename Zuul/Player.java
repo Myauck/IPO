@@ -13,6 +13,7 @@ public class Player {
     private final String name;
     private Room currentRoom;
     private Stack<Room> previousRooms;
+    private Item item;
     
     /**
      * Constructeur de la classe Player
@@ -69,4 +70,33 @@ public class Player {
             this.setCurrentRoom(previousRoom, false);
         return previousRoom;
     }
+    
+    public String lookForItem(final String itemName) {
+        return currentRoom.getItem(itemName) != null ? currentRoom.getItem(itemName).getLongDescription() : "Item not found";
+    }
+    
+    public String takeItem(final String itemName) {
+        if(this.item != null)
+            return "You already have an item on your player !";
+        
+        Item foundItem = currentRoom.getItem(itemName);
+        if(foundItem == null) {
+            return "Item in this room is not found !";
+        }
+        
+        this.item = foundItem;
+        this.currentRoom.removeItem(foundItem);
+        return "You took the item " + foundItem.getName() + " !"; 
+    }
+    
+    public String dropItem() {
+        if(this.item == null)
+            return "You have any item on your player !";
+        
+        Item item = this.item;
+        this.currentRoom.addItem(this.item);
+        this.item = null;
+        return "You dropeed the item " + item.getName() + " in the room !"; 
+    }
+    
 }

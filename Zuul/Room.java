@@ -104,6 +104,10 @@ public class Room
         this.items.put(item.getName().toLowerCase(), item);
     }
 
+    public Item removeItem(final Item item) {
+        return this.items.remove(item.getName().toLowerCase());
+    }
+    
     /**
      * Getter qui recupere l'ensemble des informations des items dans la salle
      * @return Liste des descriptions des items dans la salle

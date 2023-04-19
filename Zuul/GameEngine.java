@@ -180,10 +180,7 @@ public class GameEngine {
     private void look(Command command) {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
-            this.userInterface.println(
-                this.player.getCurrentRoom().getItem(commandWord) != null ? 
-                    this.player.getCurrentRoom().getItem(commandWord).getLongDescription() :
-                    "Item not found");
+            this.userInterface.println(this.player.lookForItem(commandWord));
             return;
         }
         
@@ -232,10 +229,40 @@ public class GameEngine {
             case "test":
                 test(command);
                 return;
+            case "take":
+                take(command);
+                return;
+            case "drop":
+                drop(command);
+                return;
             default:
                 this.userInterface.println("Unknown command !");
                 return;
         }
+    }
+    
+    /**
+     * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
+     * @param command Commande "take" au moment de l'exécution
+     */
+    public void take(final Command command) {
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("Take what ?");
+            return;
+        }
+        this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+    }   
+    
+    /**
+     * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
+     * @param command Commande "drop" que le joueur a saisi
+     */
+    public void drop(final Command command) {
+        if(command.hasSecondWord()) {
+            this.userInterface.println("Wrong prompt, there is any argument !");
+            return;
+        }
+        this.userInterface.println(this.player.dropItem());
     }
     
     

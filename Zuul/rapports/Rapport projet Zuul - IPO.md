@@ -1233,6 +1233,11 @@ public class Player {
             this.setCurrentRoom(previousRoom, false);
         return previousRoom;
     }
+    
+    public String lookForItem(final String itemName) {
+        return currentRoom.getItem(itemName) != null ? currentRoom.getItem(itemName).getLongDescription() : "Item not found";
+    }
+    
 }
 
 ```
@@ -1299,6 +1304,116 @@ private void goRoom(final Command command) {
 		à la fonction `setCurrentRoom` dans la classe Player de sauvegarder la derniere position
 		du joueur pour qu'il puisse revenir en arrière.
      */
+}
+```
+
+Et finalement pour la fonction `look` :
+
+
+<hr>
+
+###### Exercice 7.30
+
+Pour créer les nouvelles commandes `take` et `drop` pour que le joueur puisse prendre des items présents ou lâcher des items qui lui appartiennent dans la salle, nous avons tout d'abord besoin de les créer :
+
+Comme à son habitude, nous devons aller dans la classe `CommandWords` pour définir nos nouvelles commandes :
+
+```java
+public class CommandWords
+{
+    private final String[] registeredCommands;
+
+    public CommandWords() {
+        this.registeredCommands = new String[]  {
+            "go", "help", "quit", "look", "eat", "back", "test", "take", "drop"
+        };
+    }
+    
+    // [...]
+}
+```
+
+Ensuite, ajoutons ces deux nouvelles commande dans le bloc principale des commande à vérifier dans la fonction `interpretCommand()`:
+
+```java
+public void interpretCommand(final String rawCommand) {
+    // [...]
+
+    switch(command.getCommandWord().toLowerCase()) {
+            
+         // [...]
+            
+        case "take":
+            take(command);
+            return;
+        case "drop":
+            drop(command);
+            return;
+            
+         // [...]
+            
+        default:
+            this.userInterface.println("Unknown command !");
+            return;
+    }
+}
+```
+
+Maintenant, ne reste plus qu'à créer les deux commandes, la première qui sera liée à l'affichage (du coup dans la classe `GameEngine`) et la seconde partie de la commande (qui va s'occuper des contrôles du déplacement de l'item) dans la classe `Player`.
+
+Donc dans la classe `Player` nous ajoutons ceci :
+
+```java
+public String takeItem(final String itemName) {
+    if(this.item != null)
+        return "You already have an item on your player !";
+
+    Item foundItem = currentRoom.getItem(itemName);
+    if(foundItem == null) {
+        return "Item in this room is not found !";
+    }
+
+    this.item = foundItem;
+    this.currentRoom.removeItem(foundItem);
+    return "You took the item " + foundItem.getName() + " !"; 
+}
+
+public String dropItem() {
+    if(this.item == null)
+        return "You have any item on your player !";
+
+    Item item = this.item;
+    this.currentRoom.addItem(this.item);
+    this.item = null;
+    return "You dropeed the item " + item.getName() + " in the room !"; 
+}
+```
+
+Et dans la classe `GameEngine` nous ajoutons celle-là :
+
+```java
+/**
+ * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
+ * @param command Commande "take" au moment de l'exécution
+ */
+public void take(final Command command) {
+    if(!command.hasSecondWord()) {
+        this.userInterface.println("Take what ?");
+        return;
+    }
+    this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+}
+
+/**
+ * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
+ * @param command Commande "drop" que le joueur a saisi
+ */
+public void drop(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("Wrong prompt, there is any argument !");
+        return;
+    }
+    this.userInterface.println(this.player.dropItem());
 }
 ```
 

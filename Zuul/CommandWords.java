@@ -20,7 +20,7 @@ public class CommandWords
      */
     public CommandWords() {
         this.registeredCommands = new String[]  {
-            "go", "help", "quit", "look", "eat", "back", "test"
+            "go", "help", "quit", "look", "eat", "back", "test", "take", "drop"
         };
     }
 
