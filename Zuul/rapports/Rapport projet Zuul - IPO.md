@@ -1091,3 +1091,214 @@ public void test(final Command command) {
 ###### Exercice 7.28.2
 
 Pour créer nos fichier de test de commandes, nous devons aller dans le dossier de notre projet et créer les fichiers nous même, `court.txt`, `visite.txt` et `ideal.txt`, ensuite rouvrir BlueJ, et normalement, nous sommes censé avoir les 3 fichiers automatiquement implémentés dans notre projet.
+
+<hr>
+
+###### Exercice 7.29
+
+Pour Refactoring notre classe `GameEngine` en deux classes distinctes, nous devons comprendre tout d'abord quelle fonction doit aller dans laquelle des deux classes, soit celle de `GameEngine` qui comporte les éventuelles actions et commande effectuées lors de la partie, et une autre, `Player` qui contient les différentes variables qui vont influencer le joueur.
+
+Par exemple on peut noter que la fonction `goRoom(final Room room)` prend en compte un système d'affichage, un système de déplacement du joueur et un autre système d'affichage
+
+```java
+private void goRoom(final Command command) {
+    
+    // Condition qui vérifie la commande POUR L'AFFICHAGE
+    if (!command.hasSecondWord()){
+        this.userInterface.println("Go where ?");
+        return;
+    }
+
+    Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
+
+    // Conditin qui vérifie si la salle récupérer est nulle POUR L'AFFICHAGE
+    if (nextRoom == null){
+        this.userInterface.println("There is no door !");
+        return;
+    }
+
+    // SYSTEME QUI DEPLACE LE JOUEUR et enregistre la position précédente 
+    this.previousRooms.push(this.currentRoom);
+    this.currentRoom = nextRoom;
+
+    // AFFICHE les informations de la position
+    printLocationInfo();
+}
+```
+
+Or tout ce bloc de code n'a pas forcément besoin d'être déplacé dans la classe `Player`. En effet, la classe va stocker uniquement ce qu'a besoin le joueur, c'est à dire la position actuelle `currentRoom`, ses position précédentes `previousRooms`, son nom `nom`, et peut être d'autres attributs qui <u>dépendront du joueur</u>. Il faut penser qu'il peut y avoir plusieurs joueurs, par exemple, en multijoueur, les joueurs auront le même affichage dans `GameEngine` mais n'auront pas le même contenu dans leurs variables, deux joueurs différents peuvent être dans deux salles différentes.
+
+C'est donc pour cela que nous allons faire ceci :
+
+```java
+public class GameEngine {
+    
+    /*
+    Nous allons supprimer:
+    
+    private Room currentRoom;
+    private Stack<Room> previousRooms;
+    
+    ---------
+    
+    Pour ajouter:
+    */
+    
+    private final Player player;
+    
+    // [...]
+    
+    public GameEngine() {
+        // [...]
+        this.player = new Player("Nom de mon joueur");
+       	// [...]
+        this.createRooms();
+    }
+}
+```
+
+Comme vous pouvez le voir, on initialise `this.player` avant d'appeler la procédure `createRooms();`. En effet, `createRooms` aura besoin de l'attribut `player` pour définir sa salle par défaut. On aurait pu directement définir `this.player = new Player("nom");` directement dans la fonction `createRooms()` Or, par mesure de convention et d'organisation de code, il est toujours préférable d'initialiser les variables dans le constructeur.
+
+Dans cette situation on se retrouve quand même face à plusieurs erreurs : puisque les attributs `currentRoom`, `previousRooms` ont été déplacées et que la classe `Player` n'existe pas. Nous allons y remédier, tout d'abord en créant la classe `Player` :
+
+```java
+import java.util.Stack;
+
+/**
+ * Les differents attributs et fonctions liées au Joueur, permettant
+ * ainsi de se déplacer, de connaitre sa salle actuelle, de savoir ce qu'il a sur lui
+ * de savoir ses salles précédentes. Tout ce qui est lié ou influence sur le Joueur.
+ *
+ * @author Leo Gaillet
+ * @version 19/04/2023
+ */
+public class Player {
+    
+    private final String name;
+    private Room currentRoom;
+    private Stack<Room> previousRooms;
+    
+    /**
+     * Constructeur de la classe Player
+     * @param name Nom du joueur dans le jeu
+     */
+    public Player(final String name){
+        this.name = name;
+        this.previousRooms = new Stack<Room>();
+    }
+    
+    /**
+     * Permet de récupérer le nom du joueur
+     * @return Nom du joueur
+     */
+    public String getName() {
+        return this.name;
+    }
+    
+    /**
+     * Permet de récupérer la salle dans laquelle le joueur se trouve actuellement
+     * @return Salle du joueur actuelle
+     */
+    public Room getCurrentRoom() {
+        return this.currentRoom;
+    }
+    
+    /**
+     * Permet de savoir si le joueur est déjà allé dans d'autres salles précédentes
+     * @return Vérifie si le joueur peut retourner en arrière
+     */
+    public boolean hasPreviousRoom() {
+        return this.previousRooms.size() != 0;
+    }
+    
+    /**
+     * Permet de déplacer le joueur dans une nouvelle salle
+     * @param room Nouvelle salle où le joueur sera déplacé
+     * @param saveCurrentToPreviousRooms Autorise la sauvegarde de l'ancienne salle dans la liste des salles précédentes
+     */
+    public void setCurrentRoom(final Room room, final boolean saveCurrentToPreviousRooms) {
+        if(saveCurrentToPreviousRooms) {
+            this.previousRooms.push(this.currentRoom);
+        }
+        this.currentRoom = room;
+    }
+    
+    /**
+     * Permet de déplacer le joueur dans son ancienne salle
+     * @return Salle où le joueur compte se déplacer
+     */
+    public Room goPreviousRoom() {
+        Room previousRoom = this.previousRooms.pop();
+        if(previousRoom != null)
+            this.setCurrentRoom(previousRoom, false);
+        return previousRoom;
+    }
+}
+
+```
+
+Et grâce à cette classe, nous pouvons modifier quasiment tous les `this.currentRoom` dans la classe `GameEngine` qui provoquent des erreurs par des `this.player.getCurrentRoom()`. Il y aura malgré ça quelques exceptions, comme dans la commande `back()` : 
+
+<u>Remplaçons cet ancienne version de `back`</u> :
+
+```java
+public void back(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("Back what ?");
+        return;
+    }
+
+    if(this.previousRooms.size() == 0 || this.previousRooms.peek() == null) {
+        this.userInterface.println("There is any previous room !");
+        return;
+    }
+
+    this.currentRoom = this.previousRooms.pop();
+    printLocationInfo();
+}
+```
+
+<u>Par</u> :
+
+```java
+public void back(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("Back what ?");
+        return;
+    }
+
+    if(this.player.hasPreviousRoom()) {
+        this.userInterface.println("There is any previous room !");
+        return;
+    }
+
+    this.player.goPreviousRoom();
+    printLocationInfo();
+}
+```
+
+Ainsi que l'<u>ancienne version de la commande `goRoom`</u> :
+
+```java
+private void goRoom(final Command command) {
+    if (!command.hasSecondWord()){
+        this.userInterface.println("Go where ?");
+        return;
+    }
+
+    Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
+
+    if (nextRoom == null){
+        this.userInterface.println("There is no door !");
+        return;
+    }
+
+    this.player.setCurrentRoom(nextRoom, true);
+    /*
+    	Le deuxième argument dans la fonction (le 'true') ici, permet d'indiquer
+		à la fonction `setCurrentRoom` dans la classe Player de sauvegarder la derniere position
+		du joueur pour qu'il puisse revenir en arrière.
+     */
+}
+```
+

@@ -10,9 +10,8 @@ import java.io.FileNotFoundException;
  * @author Gaillet Leo
  */
 public class GameEngine {
-
-    private Room currentRoom;
-    private final Stack<Room> previousRooms = new Stack<Room>();
+    
+    private Player player;
     private Parser parser;
     private UserInterface userInterface;
 
@@ -21,6 +20,7 @@ public class GameEngine {
      */
     public GameEngine() {
         this.parser = new Parser();
+        this.player = new Player("Arthur"); // On défini le nouveau joueur avant this.createRooms() car 'createRooms' compte utiliser player
         this.createRooms();
     }
     
@@ -33,8 +33,6 @@ public class GameEngine {
         this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
         this.userInterface.println("Type 'help' if you need help.");
         printLocationInfo();
-        if(this.currentRoom.getImageName() != null)
-            this.userInterface.showImage(this.currentRoom.getImageName());
     }
 
     /**
@@ -42,7 +40,7 @@ public class GameEngine {
      */
     private void createRooms() {
         
-        // DÃ©finis les diffÃ©rents endroits possible dans le jeu
+        // DÃ©finis les différents endroits possible dans le jeu
         Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
             fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
             forbiddenForest, forbiddenForestCave;
@@ -104,9 +102,8 @@ public class GameEngine {
         secretCascadeOfDiamonds.setExit("up", cascadesOfDiamonds);
 
         forbiddenForestCave.setExit("up", forbiddenForest);
-
-        // Défini la salle de départ
-        this.currentRoom = fortressEntrance;
+        
+        this.player.setCurrentRoom(fortressEntrance, false);
         
         // Défini les différents item dans le jeu
         Item fleur, chaise, epee;
@@ -114,7 +111,7 @@ public class GameEngine {
         fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
         chaise = new Item("Chaise", "Bon, même si elle ne sert à rien, il faut quand même la mettre", 5);
         epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, épée stylée", 2);
-        this.currentRoom.addItem(fleur);
+        this.player.getCurrentRoom().addItem(fleur);
         
         fortressDungeon.addItem(chaise);
         fortressDungeon.addItem(epee);
@@ -132,9 +129,9 @@ public class GameEngine {
      * Affiche la piece actuelle et ses sorties
      */
     private void printLocationInfo() {
-        this.userInterface.println(this.currentRoom.getLongDescription());
-        if(this.currentRoom.getImageName() != null)
-            this.userInterface.showImage(currentRoom.getImageName());
+        this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
+        if(this.player.getCurrentRoom().getImageName() != null)
+            this.userInterface.showImage(player.getCurrentRoom().getImageName());
     }
     
     
@@ -148,16 +145,14 @@ public class GameEngine {
             return;
         }
         
-        Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
+        Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
         
         if (nextRoom == null){
             this.userInterface.println("There is no door !");
             return;
         }
         
-        this.previousRooms.push(this.currentRoom);
-        this.currentRoom = nextRoom;
-        
+        this.player.setCurrentRoom(nextRoom, true);
         printLocationInfo();
     }
     
@@ -186,13 +181,13 @@ public class GameEngine {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
             this.userInterface.println(
-                this.currentRoom.getItem(commandWord) != null ? 
-                    this.currentRoom.getItem(commandWord).getLongDescription() :
+                this.player.getCurrentRoom().getItem(commandWord) != null ? 
+                    this.player.getCurrentRoom().getItem(commandWord).getLongDescription() :
                     "Item not found");
             return;
         }
         
-        this.userInterface.println(this.currentRoom.getLongDescription());
+        this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
     }
      
     /**
@@ -287,12 +282,12 @@ public class GameEngine {
             return;
         }
         
-        if(this.previousRooms.size() == 0 || this.previousRooms.peek() == null) {
+        if(!this.player.hasPreviousRoom()) {
             this.userInterface.println("There is any previous room !");
             return;
         }
         
-        this.currentRoom = this.previousRooms.pop();
+        this.player.goPreviousRoom();
         printLocationInfo();
     }
     

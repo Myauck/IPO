@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.target=Player
+comment0.text=\r\n\ Les\ differents\ attributs\ et\ fonctions\ li\u00E9es\ au\ Joueur,\ permettant\r\n\ ainsi\ de\ se\ d\u00E9placer,\ de\ connaitre\ sa\ salle\ actuelle,\ de\ savoir\ ce\ qu'il\ a\ sur\ lui\r\n\ de\ savoir\ ses\ salles\ pr\u00E9c\u00E9dentes.\ Tout\ ce\ qui\ est\ li\u00E9\ ou\ influence\ sur\ le\ Joueur.\r\n\r\n\ @author\ Leo\ Gaillet\r\n\ @version\ 19/04/2023\r\n
+comment1.params=name
+comment1.target=Player(java.lang.String)
+comment1.text=\r\n\ Constructeur\ de\ la\ classe\ Player\r\n\ @param\ name\ Nom\ du\ joueur\ dans\ le\ jeu\r\n
+comment2.params=
+comment2.target=java.lang.String\ getName()
+comment2.text=\r\n\ Permet\ de\ r\u00E9cup\u00E9rer\ le\ nom\ du\ joueur\r\n\ @return\ Nom\ du\ joueur\r\n
+comment3.params=
+comment3.target=Room\ getCurrentRoom()
+comment3.text=\r\n\ Permet\ de\ r\u00E9cup\u00E9rer\ la\ salle\ dans\ laquelle\ le\ joueur\ se\ trouve\ actuellement\r\n\ @return\ Salle\ du\ joueur\ actuelle\r\n
+comment4.params=
+comment4.target=boolean\ hasPreviousRoom()
+comment4.text=\r\n\ Permet\ de\ savoir\ si\ le\ joueur\ est\ d\u00E9j\u00E0\ all\u00E9\ dans\ d'autres\ salles\ pr\u00E9c\u00E9dentes\r\n\ @return\ V\u00E9rifie\ si\ le\ joueur\ peut\ retourner\ en\ arri\u00E8re\r\n
+comment5.params=room\ saveCurrentToPreviousRooms
+comment5.target=void\ setCurrentRoom(Room,\ boolean)
+comment5.text=\r\n\ Permet\ de\ d\u00E9placer\ le\ joueur\ dans\ une\ nouvelle\ salle\r\n\ @param\ room\ Nouvelle\ salle\ o\u00F9\ le\ joueur\ sera\ d\u00E9plac\u00E9\r\n\ @param\ saveCurrentToPreviousRooms\ Autorise\ la\ sauvegarde\ de\ l'ancienne\ salle\ dans\ la\ liste\ des\ salles\ pr\u00E9c\u00E9dentes\r\n
+comment6.params=
+comment6.target=Room\ goPreviousRoom()
+comment6.text=\r\n\ Permet\ de\ d\u00E9placer\ le\ joueur\ dans\ son\ ancienne\ salle\r\n\ @return\ Salle\ o\u00F9\ le\ joueur\ compte\ se\ d\u00E9placer\r\n
+numComments=7
