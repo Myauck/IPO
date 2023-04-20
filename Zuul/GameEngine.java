@@ -25,14 +25,12 @@ public class GameEngine {
     }
     
     /**
-     * Affiche les messages lors du debut du jeu
+     * Permet de définir une interface utilisateur au moteur du jeu
+     * @param userInterface Interface utilisateur necessaire au moteur du jeu
      */
-    private void printWelcome() {
-        this.userInterface.println("Welcome to the Enchanted City !");
-        this.userInterface.println("");
-        this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
-        this.userInterface.println("Type 'help' if you need help.");
-        printLocationInfo();
+    public void setGUI(final UserInterface userInterface) {
+        this.userInterface = userInterface;
+        this.printWelcome();
     }
 
     /**
@@ -118,6 +116,17 @@ public class GameEngine {
     }
     
     /**
+     * Affiche les messages lors du debut du jeu
+     */
+    private void printWelcome() {
+        this.userInterface.println("Welcome to the Enchanted City !");
+        this.userInterface.println("");
+        this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
+        this.userInterface.println("Type 'help' if you need help.");
+        printLocationInfo();
+    }
+    
+    /**
      * Affiche les commandes possibles
      */
     private void printHelp() {
@@ -132,6 +141,56 @@ public class GameEngine {
         this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
         if(this.player.getCurrentRoom().getImageName() != null)
             this.userInterface.showImage(player.getCurrentRoom().getImageName());
+    }
+
+    /**
+     * Permet d'executer une commande saisie par l'utilisateur
+     * @param rawCommand Commande que l'utilisateur a saisie
+     */
+    public void interpretCommand(final String rawCommand) {
+        this.userInterface.println( "> " + rawCommand );
+        Command command = this.parser.getCommand( rawCommand.toLowerCase() );
+
+        if (command.isUnknown()) {
+            this.userInterface.println("I don't know what you mean ...");
+            return;
+        }
+        
+        switch(command.getCommandWord().toLowerCase()) {
+            case "go":
+                goRoom(command);
+                return;
+            case "quit":
+                quit(command);
+                return;
+            case "help":
+                printHelp();
+                return;
+            case "look":
+                look(command);
+                return;
+            case "eat":
+                eat();
+                return;
+            case "back":
+                back(command);
+                return;
+            case "test":
+                test(command);
+                return;
+            case "take":
+                take(command);
+                return;
+            case "drop":
+                drop(command);
+                return;
+            case "inventory":
+                inventory(command);
+                return;
+            default:
+                this.userInterface.println("Unknown command !");
+                return;
+        }
     }
     
     
@@ -193,76 +252,24 @@ public class GameEngine {
     private void eat() {
         this.userInterface.println("You have eaten now and you are not hungry any more.");
     }
-
+    
     /**
-     * Permet d'executer une commande saisie par l'utilisateur
-     * @param rawCommand Commande que l'utilisateur a saisie
+     * Permet de retourner dans la salle precedente
+     * @param command Commande back
      */
-    public void interpretCommand(final String rawCommand) {
-        this.userInterface.println( "> " + rawCommand );
-        Command command = this.parser.getCommand( rawCommand.toLowerCase() );
-
-        if (command.isUnknown()) {
-            this.userInterface.println("I don't know what you mean ...");
+    private void back(final Command command) {
+        if(command.hasSecondWord()) {
+            this.userInterface.println("Back what ?");
             return;
         }
         
-        switch(command.getCommandWord().toLowerCase()) {
-            case "go":
-                goRoom(command);
-                return;
-            case "quit":
-                quit(command);
-                return;
-            case "help":
-                printHelp();
-                return;
-            case "look":
-                look(command);
-                return;
-            case "eat":
-                eat();
-                return;
-            case "back":
-                back(command);
-                return;
-            case "test":
-                test(command);
-                return;
-            case "take":
-                take(command);
-                return;
-            case "drop":
-                drop(command);
-                return;
-            default:
-                this.userInterface.println("Unknown command !");
-                return;
-        }
-    }
-    
-    /**
-     * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
-     * @param command Commande "take" au moment de l'exécution
-     */
-    private void take(final Command command) {
-        if(!command.hasSecondWord()) {
-            this.userInterface.println("Take what ?");
+        if(!this.player.hasPreviousRoom()) {
+            this.userInterface.println("There is any previous room !");
             return;
         }
-        this.userInterface.println(this.player.takeItem(command.getSecondWord()));
-    }   
-    
-    /**
-     * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
-     * @param command Commande "drop" que le joueur a saisi
-     */
-    private void drop(final Command command) {
-        if(!command.hasSecondWord()) {
-            this.userInterface.println("Drop what ?");
-            return;
-        }
-        this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+        
+        this.player.goPreviousRoom();
+        printLocationInfo();
     }
     
     
@@ -300,30 +307,34 @@ public class GameEngine {
     }
     
     /**
-     * Permet de retourner dans la salle precedente
-     * @param command Commande back
+     * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
+     * @param command Commande "take" au moment de l'exécution
      */
-    private void back(final Command command) {
-        if(command.hasSecondWord()) {
-            this.userInterface.println("Back what ?");
+    private void take(final Command command) {
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("Take what ?");
             return;
         }
-        
-        if(!this.player.hasPreviousRoom()) {
-            this.userInterface.println("There is any previous room !");
-            return;
-        }
-        
-        this.player.goPreviousRoom();
-        printLocationInfo();
-    }
+        this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+    }   
     
     /**
-     * Permet de définir une interface utilisateur au moteur du jeu
-     * @param userInterface Interface utilisateur necessaire au moteur du jeu
+     * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
+     * @param command Commande "drop" que le joueur a saisi
      */
-    public void setGUI(final UserInterface userInterface) {
-        this.userInterface = userInterface;
-        this.printWelcome();
+    private void drop(final Command command) {
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("Drop what ?");
+            return;
+        }
+        this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+    }
+    
+    private void inventory(final Command command) {
+        if(command.hasSecondWord()) {
+            this.userInterface.println("I dont understand what do you want...");
+            return;
+        }
+        this.userInterface.println("My Inventory : " + this.player.getInventoryContent());
     }
 }

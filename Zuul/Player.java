@@ -118,4 +118,12 @@ public class Player {
         return this.maxWeight;
     }
     
+    public String getInventoryContent() {
+        String response = "(" + this.items.getSize()+")\n";
+        for(Item item : this.items.getContent()) {
+            response += "- " + item.getLongDescription() + "\n";
+        }
+        return response;
+    }
+    
 }

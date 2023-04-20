@@ -1788,6 +1788,91 @@ public String dropItem(final String itemName) {
 }
 ```
 
+<hr>
+
+###### Exercice 7.33
+
+Pour afficher la liste des items dans l'inventaire du joueur, nous devons déjà enregistrer une nouvelle commande dans `CommandWords` et l'ajouter dans notre multi-bloc conditionnel dans notre fonction `interpretCommand()` dans notre classe `GameEngine`. 
+
+`CommandWords`:
+
+```java
+public class CommandWords
+{
+    private final String[] registeredCommands;
+
+    public CommandWords() {
+        this.registeredCommands = new String[]  {
+            "go", "help", "quit", "look", "eat", "back", "test", "take", "drop", "inventory"
+        };
+    }
+    
+    // [...]
+    
+}
+```
+
+`GameEngine.java`:
+
+```java
+
+public void interpretCommand(final String rawCommand) {
+    // [...]
+    if (command.isUnknown()) {
+        this.userInterface.println("I don't know what you mean ...");
+        return;
+    }
+
+    switch(command.getCommandWord().toLowerCase()) {
+        case "go":
+            goRoom(command);
+            return;
+        
+        // [...]
+            
+        case "inventory":
+            inventory(command);
+            return;
+        
+        // [...]
+            
+        default:
+            this.userInterface.println("Unknown command !");
+            return;
+    }
+}
+
+private void inventory(final Command command) {
+    if(command.hasSecondWord()) {
+        this.userInterface.println("I dont understand what do you want...");
+        return;
+    }
+    this.userInterface.println("My Inventory : " + this.player.getInventoryContent());
+}
+```
+
+Suivi de cela, nous allons créer une nouvelle méthode dans la classe `Player` tout en utilisant les fonctions déjà inscrites dans l'attribut `this.items ` (qui pointent vers une classe `ItemList`):
+
+```java
+public class Player {
+    
+    // [...]
+    
+    public String getInventoryContent() {
+        String response = "(" + this.items.getSize() + ")\n";
+        for(Item item : this.items.getContent()) {
+            response += "- " + item.getLongDescription() + "\n";
+        }
+        return response;
+    }
+    
+    // [...]
+
+}
+```
+
+
+
 
 
 
