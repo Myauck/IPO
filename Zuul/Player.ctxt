@@ -1,9 +1,13 @@
 #BlueJ class context
 comment0.target=Player
 comment0.text=\r\n\ Les\ differents\ attributs\ et\ fonctions\ li\u00E9es\ au\ Joueur,\ permettant\r\n\ ainsi\ de\ se\ d\u00E9placer,\ de\ connaitre\ sa\ salle\ actuelle,\ de\ savoir\ ce\ qu'il\ a\ sur\ lui\r\n\ de\ savoir\ ses\ salles\ pr\u00E9c\u00E9dentes.\ Tout\ ce\ qui\ est\ li\u00E9\ ou\ influence\ sur\ le\ Joueur.\r\n\r\n\ @author\ Leo\ Gaillet\r\n\ @version\ 19/04/2023\r\n
-comment1.params=name
-comment1.target=Player(java.lang.String)
+comment1.params=name\ maxWeight
+comment1.target=Player(java.lang.String,\ int)
 comment1.text=\r\n\ Constructeur\ de\ la\ classe\ Player\r\n\ @param\ name\ Nom\ du\ joueur\ dans\ le\ jeu\r\n
+comment10.params=
+comment10.target=int\ getWeight()
+comment11.params=
+comment11.target=int\ getMaxWeight()
 comment2.params=
 comment2.target=java.lang.String\ getName()
 comment2.text=\r\n\ Permet\ de\ r\u00E9cup\u00E9rer\ le\ nom\ du\ joueur\r\n\ @return\ Nom\ du\ joueur\r\n
@@ -25,4 +29,4 @@ comment8.params=itemName
 comment8.target=java.lang.String\ takeItem(java.lang.String)
 comment9.params=itemName
 comment9.target=java.lang.String\ dropItem(java.lang.String)
-numComments=10
+numComments=12

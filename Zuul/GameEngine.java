@@ -20,7 +20,7 @@ public class GameEngine {
      */
     public GameEngine() {
         this.parser = new Parser();
-        this.player = new Player("Arthur"); // On défini le nouveau joueur avant this.createRooms() car 'createRooms' compte utiliser player
+        this.player = new Player("Arthur", 2); // On défini le nouveau joueur avant this.createRooms() car 'createRooms' compte utiliser player
         this.createRooms();
     }
     

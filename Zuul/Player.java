@@ -15,15 +15,21 @@ public class Player {
     private Room currentRoom;
     private final Stack<Room> previousRooms;
     private final ItemList items;
+    private final int maxWeight;
+    private int weight;
     
     /**
      * Constructeur de la classe Player
      * @param name Nom du joueur dans le jeu
      */
-    public Player(final String name){
+    public Player(final String name, final int maxWeight){
         this.name = name;
         this.previousRooms = new Stack<Room>();
         this.items = new ItemList();
+        
+        this.maxWeight = maxWeight;
+        this.weight = 0;
+        
     }
     
     /**
@@ -79,12 +85,17 @@ public class Player {
     
     public String takeItem(final String itemName) {
         Item foundItem = currentRoom.getItemList().getItem(itemName);
-        if(foundItem == null) {
-            return "Item in this room is not found !";
-        }
         
+        if(foundItem == null)
+            return "Item in this room is not found !";
+        
+        if(this.weight + foundItem.getWeight() > this.maxWeight)
+            return "You can't take this item ! It's to heavy for you !";
+        
+        this.weight += foundItem.getWeight();
         this.items.addItem(foundItem);
         this.currentRoom.getItemList().removeItem(foundItem);
+        
         return "You took the item " + foundItem.getName() + " !"; 
     }
     
@@ -94,8 +105,17 @@ public class Player {
         
         Item item = this.items.getItem(itemName.toLowerCase());
         this.currentRoom.getItemList().addItem(item);
+        this.weight -= item.getWeight();
         this.items.removeItem(item);
         return "You dropeed the item " + item.getName() + " in the room !"; 
+    }
+    
+    public int getWeight() {
+        return this.weight;
+    }
+    
+    public int getMaxWeight() {
+        return this.maxWeight;
     }
     
 }

@@ -1696,6 +1696,100 @@ private void drop(final Command command) {
 }
 ```
 
+<hr>
+
+###### Exercice 7.32
+
+Pour ajouter la fonctionnalité qui permet de fixer un poids maximal au joueur, et ainsi porter une quantité limitée d'items, c'est déjà créer les nouveau attributs qui lui seront utiles.
+
+Pour commencer, créons nos attributs dans `Player` et ajoutons ses getters : 
+
+```java
+public class Player {
+    
+    // [...]
+    
+    private final int maxWeight;
+    private int weight;
+    
+    // Changeons la signature du constructeur
+    public Player(final String name, final int maxWeight) {
+        
+        // [...]
+        
+        this.maxWeight = maxWeight;
+        // "this.maxWeight" pointe vers l'attribut qui se nomme "maxWeight"
+        // "maxWeight" pointe vers une variable locale qui se nomme "maxWeight" (ici, il s'agit du paramètre)
+
+        this.weight = 0;
+    }
+    
+    // Getter de l'attribut "weight"
+    public int getWeight() {
+        return this.weight;
+    }
+    
+    // Getter de l'attribut "maxWeight"
+    public int getMaxWeight() {
+        return this.maxWeight;
+    }
+    
+}
+```
+
+Maintenant, il ne reste plus qu'a ajouter les poids ou retirer les poids, selon l'action du joueur:
+
+- Si le joueur ajoute un élément dans son inventaire, il va s'allourdir
+- Si le joueur retire un élément de son inventaire, il va s'alléger
+- Si le joueur n'a plus de place, empêche le joueur de prendre un objet
+
+Commençons par modifier la fonction `takeItem(final String itemName)` dans la classe `Player`:
+
+```java
+public String takeItem(final String itemName) {
+    Item foundItem = currentRoom.getItemList().getItem(itemName);
+    if(foundItem == null) {
+        return "Item in this room is not found !";
+    }
+	
+    // Vérifie si le poids qui va être ajouté par l'item ne dépasse pas la limite autorisée
+    if(this.weight + foundItem.getWeight() > this.maxWeight) {
+        // retourne un message et quitte la fonction (la suite de la fonction n'est donc pas lue)
+        return "You can't take this item ! It's to heavy for you !";
+    }
+    
+    // Si ça passe ici, ça veut dire que le poids est convenable, pour l'ajouter faisons :
+    this.weight += foundItem.getWeight();
+    
+    this.items.addItem(foundItem);
+    this.currentRoom.getItemList().removeItem(foundItem);
+    return "You took the item " + foundItem.getName() + " !"; 
+}
+```
+
+Et procéder de la même manière avec `dropItem(final String itemName)` dans la même classe :
+
+```java
+public String dropItem(final String itemName) {
+    
+    if(!this.items.hasItem(itemName.toLowerCase())) {
+        return "You have any item named like this on your player !";
+    }
+
+    Item item = this.items.getItem(itemName.toLowerCase());
+    this.currentRoom.getItemList().addItem(item);
+    
+    // Ici pas besoin de vérifier si le poids est inférieur au poids maximal puisque nous allons
+    // retirer un item, donc forcément, l'item nous fera perdre du poids
+    this.weight -= item.getWeight();
+    
+    this.items.removeItem(item);
+    return "You dropeed the item " + item.getName() + " in the room !"; 
+}
+```
+
+
+
 
 
 
