@@ -19,7 +19,7 @@ public class Room
     private final String description;
     private final HashMap<String, Room> exits = new HashMap<String, Room>();
     private final String imageName;
-    private final HashMap<String, Item> items = new HashMap<String, Item>();
+    private final ItemList items;
     
     
     /**
@@ -31,6 +31,7 @@ public class Room
     public Room(final String description, final String imageName) {
         this.description = description;
         this.imageName = imageName;
+        this.items = new ItemList();
     }
     
     /**
@@ -87,25 +88,8 @@ public class Room
         return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
     }
     
-    /**
-     * Getter qui permet de recuperer un item par rapport au nom
-     * @param itemName Nom de l'item que nous recherchons
-     * @return Item trouve par rapport à la liste des items presents
-     */
-    public Item getItem(final String itemName) {
-        return this.items.get(itemName.toLowerCase());
-    }
-    
-    /**
-     * Permet d'ajouter un item dans la salle
-     * @param item Item a ajouter dans la salle
-     */
-    public void addItem(final Item item) {
-        this.items.put(item.getName().toLowerCase(), item);
-    }
-
-    public Item removeItem(final Item item) {
-        return this.items.remove(item.getName().toLowerCase());
+    public ItemList getItemList() {
+        return this.items;
     }
     
     /**
@@ -113,14 +97,14 @@ public class Room
      * @return Liste des descriptions des items dans la salle
      */
     public String getItemString() {
-        if(items.size() == 0)
+        if(items.isEmpty())
             return "No items here";
         
         StringBuilder itemContent = new StringBuilder();
-        for(Item item : items.values()) {
+        for(Item item : items.getContent()) {
             itemContent.append("\"" + item.getName() + "\": ");
             itemContent.append("\t" + item.getLongDescription() + "\n");
         }
-        return "Available items (" + items.size() + ") : " + itemContent.toString();
+        return "Available items (" + items.getSize() + ") : " + itemContent.toString();
     }
 }

@@ -111,10 +111,10 @@ public class GameEngine {
         fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
         chaise = new Item("Chaise", "Bon, même si elle ne sert à rien, il faut quand même la mettre", 5);
         epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, épée stylée", 2);
-        this.player.getCurrentRoom().addItem(fleur);
+        this.player.getCurrentRoom().getItemList().addItem(fleur);
         
-        fortressDungeon.addItem(chaise);
-        fortressDungeon.addItem(epee);
+        fortressDungeon.getItemList().addItem(chaise);
+        fortressDungeon.getItemList().addItem(epee);
     }
     
     /**
@@ -245,7 +245,7 @@ public class GameEngine {
      * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
      * @param command Commande "take" au moment de l'exécution
      */
-    public void take(final Command command) {
+    private void take(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Take what ?");
             return;
@@ -257,7 +257,7 @@ public class GameEngine {
      * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
      * @param command Commande "drop" que le joueur a saisi
      */
-    public void drop(final Command command) {
+    private void drop(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Drop what ?");
             return;
@@ -270,7 +270,7 @@ public class GameEngine {
      * Permet de tester un ensemble de commandes enregistrées dans un fichier et les exécute
      * @param command Commande test lors de l'exécution
      */
-    public void test(final Command command) {
+    private void test(final Command command) {
 
         if(!command.hasSecondWord()) {
             this.userInterface.println("You need to choose a file to test commands !");
@@ -303,7 +303,7 @@ public class GameEngine {
      * Permet de retourner dans la salle precedente
      * @param command Commande back
      */
-    public void back(final Command command) {
+    private void back(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("Back what ?");
             return;

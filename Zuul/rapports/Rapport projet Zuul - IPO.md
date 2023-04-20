@@ -1126,7 +1126,7 @@ private void goRoom(final Command command) {
 }
 ```
 
-Or tout ce bloc de code n'a pas forcément besoin d'être déplacé dans la classe `Player`. En effet, la classe va stocker uniquement ce qu'a besoin le joueur, c'est à dire la position actuelle `currentRoom`, ses position précédentes `previousRooms`, son nom `nom`, et peut être d'autres attributs qui <u>dépendront du joueur</u>. Il faut penser qu'il peut y avoir plusieurs joueurs, par exemple, en multijoueur, les joueurs auront le même affichage dans `GameEngine` mais n'auront pas le même contenu dans leurs variables, deux joueurs différents peuvent être dans deux salles différentes.
+Or tout ce bloc de code n'a pas forcément besoin d'être déplacé dans la classe `Player`. En effet, la classe va stocker uniquement ce qu'a besoin le joueur, c'est à dire la position actuelle `currentRoom`, ses positions précédentes `previousRooms`, son nom `nom`, et peut être d'autres attributs qui <u>dépendront du joueur</u>. Il faut penser qu'il peut y avoir plusieurs joueurs, par exemple, en multijoueur, les joueurs auront le même affichage dans `GameEngine` mais n'auront pas le même contenu dans leurs variables, deux joueurs différents peuvent être dans deux salles différentes.
 
 C'est donc pour cela que nous allons faire ceci :
 
@@ -1244,7 +1244,7 @@ public class Player {
 
 Et grâce à cette classe, nous pouvons modifier quasiment tous les `this.currentRoom` dans la classe `GameEngine` qui provoquent des erreurs par des `this.player.getCurrentRoom()`. Il y aura malgré ça quelques exceptions, comme dans la commande `back()` : 
 
-<u>Remplaçons cet ancienne version de `back`</u> :
+<u>Remplaçons cette ancienne version de `back`</u> :
 
 ```java
 public void back(final Command command) {
@@ -1429,7 +1429,9 @@ public void drop(final Command command) {
 
 La différence entre cet exercice et le précédent, c'est que dans cette situation, nous pouvons prendre plusieurs objet sur nous, ce qui va modifier pas mal notre programme :
 
-Tout vas quasiment se passer dans la classe `Player`, en effet, le traitement se passe sur le joueur, car c'est lui qui fait l'action, donc il s'agit de la classe `Player` qui va être modifiée.
+Tout vas quasiment se passer dans la classe `Player`, en effet, le traitement se passe sur le joueur, car c'est lui qui subit des modification (son inventaire), donc il s'agit de la classe `Player` qui va être modifiée.
+
+Il y aura aussi la classe `Room` puisqu'elle va aussi subir les modifications liées à son inventaire (par exemple, le joueur prend un item dans la salle, la salle va perdre un item de son inventaire, alors que le joueur va récupérer l'item qui a été pris dans de l'inventaire de la salle).
 
 Tout d'abord retirons cet attribut
 
@@ -1437,7 +1439,7 @@ Tout d'abord retirons cet attribut
 private Item item;
 ```
 
-par:
+Et remplaçons le par:
 
 ```java
 private final HashMap<String, Item> items = new HashMap<String, Item>();
@@ -1469,7 +1471,7 @@ public String dropItem(final String itemName) {
 }
 ```
 
-Et puisque nous avons modifié la signature de `public String dropItem()` par `public String dropItem(final String itemName)` Nous devons aller dans la classe `GameEngine` pour effectuer quelques modifications (car la procédure `drop`qui se trouve dans `GameEngine` appelle la fonction `dropItem` dans la classe `Player`) :
+Et puisque nous avons modifié la signature de `public String dropItem()` par `public String dropItem(final String itemName)` (Nous avons donné un paramètre à notre fonction `dropItem` car maintenant, puisque nous pouvons avoir plusieurs Items dans notre inventaire, notre programme aura besoin de savoir ce que nous voulions jeter comme item de notre inventaire) Nous devons aller dans la classe `GameEngine` pour effectuer quelques modifications (car la procédure `drop`qui se trouve dans `GameEngine` appelle la fonction `dropItem` dans la classe `Player`) :
 
 Dans la classe `GameEngine` modifions alors `drop`: 
 
@@ -1486,6 +1488,215 @@ public void drop(final Command command) {
     this.userInterface.println(this.player.dropItem(command.getSecondWord()));
 }
 ```
+
+<hr>
+
+###### Exercice 7.31.1
+
+Comme il nous est demandé de créer une classe commune à Player et Room, nous devons comprendre qu'est qu'il peut y avoir en commun avec ces deux classes. On remarque depuis quelques exercices que la classe Player et la classe Room possèdent plusieurs points communs :
+
+- Ils peuvent avoir des items dans une liste d'items
+- On peut ajouter ou retirer des éléments de la liste d'items
+- La liste des items ne doit pas être accessible de extérieur (car l'attribut est privé)
+
+Nous pouvons créer une classe `ItemList` qui mettra tous ces points commun dans une seule et même classe au lieu de mettre trop de ligne de code répétitives. C'est un peu comme si la classe `ItemList` était la représentation général de notre inventaire dans le jeu,
+Il y aura donc un inventaire pour le joueur, et un inventaire pour chaque salle :
+
+```java
+import java.util.HashMap;
+
+/**
+ * ItemList est une classe dédiée à la gestion d'une collection des
+ * Item présent pour dans un joueur sous forme d'inventaire ou 
+ * sous forme d'un ensemble de fonctionnalités permettant
+ * de manipuler les Items qui se trouvent à l'interieur de celle-ci
+ *
+ * @author Leo GAILLET
+ * @version 20/04/2023
+ */
+public class ItemList {
+    
+    private final HashMap<String, Item> items = new HashMap<String, Item>();
+    
+    public Item getItem(final String itemName) {
+        return items.get(itemName.toLowerCase());
+    }
+    
+    public void addItem(final Item item) {
+        this.items.put(item.getName().toLowerCase(), item);
+    }
+    
+    public void removeItem(final Item item) {
+        this.items.remove(item.getName().toLowerCase());
+    }
+    
+    public boolean hasItem(final String itemName) {
+        return this.items.containsKey(itemName.toLowerCase());
+    }
+    
+    public boolean isEmpty() {
+        return getSize() == 0;
+    }
+    
+    public int getSize() {
+        return this.items.size();
+    }
+    
+    public Item[] getContent() {
+        Item[] availableItems = new Item[items.size()];
+        int i = 0;
+        for(Item item : items.values()) {
+            availableItems[i] = item;
+            i++;
+        }
+        return availableItems;
+    }
+    
+}
+```
+
+ Ainsi, dans la classe `Player`, tout ce qui touche à son inventaire, c'est à dire l'attribut `private final HashMap<String, Item> items;` n'a plus besoin d'être là. On peut directement faire comme ceci :
+
+```java
+public class Player {
+    
+    private final String name;
+    private Room currentRoom;
+    private final Stack<Room> previousRooms;
+    // Remplaçons
+    // private final HashMap<String, Item> items;
+    // Par:
+    private final ItemList items;
+    
+    public Player(final String name){
+        this.name = name;
+        this.previousRooms = new Stack<Room>();
+        // Initialisons la ItemList
+        this.items = new ItemList();
+    }
+ 
+    // [...]
+    
+    public String lookForItem(final String itemName) {
+        // Remplaçons "currentRoom.getItem(itemName)" par "currentRoom.getItemList().getItem(itemName)"
+        return currentRoom.getItemList().getItem(itemName) != null ? currentRoom.getItemList().getItem(itemName).getLongDescription() : "Item not found";
+    }
+    
+    public String takeItem(final String itemName) {
+        // Remplaçons "currentRoom.getItem(itemName)" par "currentRoom.getItemList().getItem(itemName)"
+        Item foundItem = currentRoom.getItemList().getItem(itemName);
+        if(foundItem == null) {
+            return "Item in this room is not found !";
+        }
+        
+        // Ici, à la place de faire this.items.put(...) utilisons directement
+        // la fonction proposée dans la classe ItemList
+        this.items.addItem(foundItem);
+        
+        // Pareil ici, on peut directement appeler la fonction proposé dans ItemList dans la salle dans laquelle nous sommes
+        this.currentRoom.getItemList().removeItem(foundItem);
+        // Si vous ne comprennez pas le bout de code juste au dessus
+        // Faites une simple traduction
+        // Joueur.laSalleDansLaquelleJeSuis().recupererListeItems().retirerItem(itemTrouvé)
+        // Ce qui donne:
+        // Retire moi l'item "itemTrouvé" dans la liste des items de la salle, là où le joueur se trouve actuellement
+        
+        return "You took the item " + foundItem.getName() + " !"; 
+    }
+    
+    public String dropItem(final String itemName) {
+        if(!this.items.hasItem(itemName.toLowerCase()))
+            return "You have any item named like this on your player !";
+        
+        Item item = this.items.getItem(itemName.toLowerCase());
+        this.currentRoom.getItemList().addItem(item);
+        this.items.removeItem(item);
+        return "You dropeed the item " + item.getName() + " in the room !"; 
+    }
+    
+}
+```
+
+Et procédons de la même manière dans la classe `Room` :
+
+```java
+import java.util.HashMap;
+
+/*
+ * Class Room - a room in an adventure game.
+ *
+ * This class is part of the "World of Zuul" application. 
+ * "World of Zuul" is a very simple, text based adventure game.  
+ *
+ * A "Room" represents one location in the scenery of the game.  It is 
+ * connected to other rooms via exits.  For each existing exit, the room 
+ * stores a reference to the neighboring room.
+ * 
+ * @author  Michael Kolling, David J. Barnes, Leo Gaillet
+ * @version 1.0 (February 2002) DBMOD:04/04/2008, 2019, 2023
+ */
+public class Room
+{
+    private final String description;
+    private final HashMap<String, Room> exits = new HashMap<String, Room>();
+    private final String imageName;
+    private final ItemList items;
+    
+    public Room(final String description, final String imageName) {
+        this.description = description;
+        this.imageName = imageName;
+        this.items = new ItemList();
+    }
+    
+    public ItemList getItemList() {
+        return this.items;
+    }
+    
+    public String getItemString() {
+        if(items.isEmpty())
+            return "No items here";
+        
+        StringBuilder itemContent = new StringBuilder();
+        for(Item item : items.getContent()) {
+            itemContent.append("\"" + item.getName() + "\": ");
+            itemContent.append("\t" + item.getLongDescription() + "\n");
+        }
+        return "Available items (" + items.getSize() + ") : " + itemContent.toString();
+    }
+}
+
+```
+
+Malgré ça, on aura toujours des erreurs, nous avons oublié une classe importante, qui n'a pas été modifiée, il s'agit de `GameEngine`, 
+
+```java
+private void look(Command command) {
+    if(command.hasSecondWord()) {
+        String commandWord = command.getSecondWord();
+        this.userInterface.println(this.player.lookForItem(commandWord));
+        return;
+    }
+    this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
+}
+
+private void take(final Command command) {
+    if(!command.hasSecondWord()) {
+        this.userInterface.println("Take what ?");
+        return;
+    }
+    this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+}   
+
+private void drop(final Command command) {
+    if(!command.hasSecondWord()) {
+        this.userInterface.println("Drop what ?");
+        return;
+    }
+    this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+}
+```
+
+
 
 
 

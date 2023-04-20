@@ -13,8 +13,8 @@ public class Player {
     
     private final String name;
     private Room currentRoom;
-    private Stack<Room> previousRooms;
-    private HashMap<String, Item> items;
+    private final Stack<Room> previousRooms;
+    private final ItemList items;
     
     /**
      * Constructeur de la classe Player
@@ -23,7 +23,7 @@ public class Player {
     public Player(final String name){
         this.name = name;
         this.previousRooms = new Stack<Room>();
-        this.items = new HashMap<String, Item>();
+        this.items = new ItemList();
     }
     
     /**
@@ -74,27 +74,27 @@ public class Player {
     }
     
     public String lookForItem(final String itemName) {
-        return currentRoom.getItem(itemName) != null ? currentRoom.getItem(itemName).getLongDescription() : "Item not found";
+        return currentRoom.getItemList().getItem(itemName) != null ? currentRoom.getItemList().getItem(itemName).getLongDescription() : "Item not found";
     }
     
     public String takeItem(final String itemName) {
-        Item foundItem = currentRoom.getItem(itemName);
+        Item foundItem = currentRoom.getItemList().getItem(itemName);
         if(foundItem == null) {
             return "Item in this room is not found !";
         }
         
-        this.items.put(foundItem.getName().toLowerCase(), foundItem);
-        this.currentRoom.removeItem(foundItem);
+        this.items.addItem(foundItem);
+        this.currentRoom.getItemList().removeItem(foundItem);
         return "You took the item " + foundItem.getName() + " !"; 
     }
     
     public String dropItem(final String itemName) {
-        if(!this.items.containsKey(itemName.toLowerCase()))
+        if(!this.items.hasItem(itemName.toLowerCase()))
             return "You have any item named like this on your player !";
         
-        Item item = this.items.get(itemName.toLowerCase());
-        this.currentRoom.addItem(item);
-        this.items.remove(itemName.toLowerCase());
+        Item item = this.items.getItem(itemName.toLowerCase());
+        this.currentRoom.getItemList().addItem(item);
+        this.items.removeItem(item);
         return "You dropeed the item " + item.getName() + " in the room !"; 
     }
     
