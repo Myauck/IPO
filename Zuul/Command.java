@@ -23,7 +23,7 @@ public class Command {
      * 
      * @return Commande principale
      */
-    public String getCommandWord () {
+    public String getCommandWord() {
         return this.commandWord;
     }
     
@@ -31,7 +31,7 @@ public class Command {
      * Getter qui recupere la commande secondaire
      * @return Commande secondaire
      */
-    public String getSecondWord () {
+    public String getSecondWord() {
         return this.secondWord;
     }
 
@@ -39,7 +39,7 @@ public class Command {
      * Permet de savoir si la commande possede une commande secondaire
      * @return Si la commande secondaire existe
      */
-    public boolean hasSecondWord () {
+    public boolean hasSecondWord() {
         return this.getSecondWord() != null;
     }
     
@@ -47,8 +47,8 @@ public class Command {
      * Permet de savoir si la commande principale n'est pas nulle
      * @return Si la commande est nulle
      */
-    public boolean isUnknown ()
+    public boolean isUnknown()
     {
-        return this.getCommandWord() == null;
+        return this.getCommandWord() == "" || this.getCommandWord() == null;
     }
 }

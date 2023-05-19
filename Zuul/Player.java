@@ -1,10 +1,9 @@
 import java.util.Stack;
-import java.util.HashMap;
 
 /**
- * Les differents attributs et fonctions liées au Joueur, permettant
- * ainsi de se déplacer, de connaitre sa salle actuelle, de savoir ce qu'il a sur lui
- * de savoir ses salles précédentes. Tout ce qui est lié ou influence sur le Joueur.
+ * Les differents attributs et fonctions liï¿½es au Joueur, permettant
+ * ainsi de se dï¿½placer, de connaitre sa salle actuelle, de savoir ce qu'il a sur lui
+ * de savoir ses salles prï¿½cï¿½dentes. Tout ce qui est liï¿½ ou influence sur le Joueur.
  *
  * @author Leo Gaillet
  * @version 19/04/2023
@@ -15,12 +14,13 @@ public class Player {
     private Room currentRoom;
     private final Stack<Room> previousRooms;
     private final ItemList items;
-    private final int maxWeight;
+    private int maxWeight;
     private int weight;
     
     /**
      * Constructeur de la classe Player
      * @param name Nom du joueur dans le jeu
+     * @param maxWeight Poids maximal que peut possï¿½der l'inventaire du joueur
      */
     public Player(final String name, final int maxWeight){
         this.name = name;
@@ -33,7 +33,7 @@ public class Player {
     }
     
     /**
-     * Permet de récupérer le nom du joueur
+     * Permet de rï¿½cupï¿½rer le nom du joueur
      * @return Nom du joueur
      */
     public String getName() {
@@ -41,7 +41,7 @@ public class Player {
     }
     
     /**
-     * Permet de récupérer la salle dans laquelle le joueur se trouve actuellement
+     * Permet de rï¿½cupï¿½rer la salle dans laquelle le joueur se trouve actuellement
      * @return Salle du joueur actuelle
      */
     public Room getCurrentRoom() {
@@ -49,17 +49,17 @@ public class Player {
     }
     
     /**
-     * Permet de savoir si le joueur est déjà allé dans d'autres salles précédentes
-     * @return Vérifie si le joueur peut retourner en arrière
+     * Permet de savoir si le joueur est dï¿½jï¿½ allï¿½ dans d'autres salles prï¿½cï¿½dentes
+     * @return Vï¿½rifie si le joueur peut retourner en arriï¿½re
      */
     public boolean hasPreviousRoom() {
         return this.previousRooms.size() != 0;
     }
     
     /**
-     * Permet de déplacer le joueur dans une nouvelle salle
-     * @param room Nouvelle salle où le joueur sera déplacé
-     * @param saveCurrentToPreviousRooms Autorise la sauvegarde de l'ancienne salle dans la liste des salles précédentes
+     * Permet de dï¿½placer le joueur dans une nouvelle salle
+     * @param room Nouvelle salle oï¿½ le joueur sera dï¿½placï¿½
+     * @param saveCurrentToPreviousRooms Autorise la sauvegarde de l'ancienne salle dans la liste des salles prï¿½cï¿½dentes
      */
     public void setCurrentRoom(final Room room, final boolean saveCurrentToPreviousRooms) {
         if(saveCurrentToPreviousRooms) {
@@ -69,18 +69,14 @@ public class Player {
     }
     
     /**
-     * Permet de déplacer le joueur dans son ancienne salle
-     * @return Salle où le joueur compte se déplacer
+     * Permet de dï¿½placer le joueur dans son ancienne salle
+     * @return Salle oï¿½ le joueur compte se dï¿½placer
      */
     public Room goPreviousRoom() {
         Room previousRoom = this.previousRooms.pop();
         if(previousRoom != null)
             this.setCurrentRoom(previousRoom, false);
         return previousRoom;
-    }
-    
-    public String lookForItem(final String itemName) {
-        return currentRoom.getItemList().getItem(itemName) != null ? currentRoom.getItemList().getItem(itemName).getLongDescription() : "Item not found";
     }
     
     public String takeItem(final String itemName) {
@@ -117,13 +113,21 @@ public class Player {
     public int getMaxWeight() {
         return this.maxWeight;
     }
+
+    public void setMaxWeight(final int maxWeight) {
+        this.maxWeight = maxWeight;
+    }
     
     public String getInventoryContent() {
-        String response = "(" + this.items.getSize()+")\n";
+        String response = "(" + this.items.getSize() + ")\n";
         for(Item item : this.items.getContent()) {
             response += "- " + item.getLongDescription() + "\n";
         }
         return response;
+    }
+
+    public ItemList getInventory() {
+        return this.items;
     }
     
 }

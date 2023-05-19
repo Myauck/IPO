@@ -1,13 +1,12 @@
 import java.util.Scanner;
-import java.util.Stack;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
 
 /**
  * Classe Game - le moteur du jeu d'aventure Zuul.
  *
  * @author Gaillet Leo
+ * @version 1.0.0
  */
 public class GameEngine {
     
@@ -15,17 +14,19 @@ public class GameEngine {
     private Parser parser;
     private UserInterface userInterface;
 
+    private int commandsLeft = 100;
+
     /**
      * Constructeur par defaut de la classe Game
      */
     public GameEngine() {
         this.parser = new Parser();
-        this.player = new Player("Arthur", 2); // On défini le nouveau joueur avant this.createRooms() car 'createRooms' compte utiliser player
+        this.player = new Player("Arthur", 2);
         this.createRooms();
     }
     
     /**
-     * Permet de définir une interface utilisateur au moteur du jeu
+     * Permet de dï¿½finir une interface utilisateur au moteur du jeu
      * @param userInterface Interface utilisateur necessaire au moteur du jeu
      */
     public void setGUI(final UserInterface userInterface) {
@@ -33,12 +34,16 @@ public class GameEngine {
         this.printWelcome();
     }
 
+    public void endGame() {
+        this.userInterface.enable(false);
+    }
+
     /**
      * Permet d'instancier les differentes salles et les differents objets du jeu
      */
     private void createRooms() {
         
-        // DÃ©finis les différents endroits possible dans le jeu
+        // DÃ©finis les diffï¿½rents endroits possible dans le jeu
         Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
             fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
             forbiddenForest, forbiddenForestCave;
@@ -103,14 +108,16 @@ public class GameEngine {
         
         this.player.setCurrentRoom(fortressEntrance, false);
         
-        // Défini les différents item dans le jeu
-        Item fleur, chaise, epee;
-        
-        fleur = new Item("Fleur", "Il y en a une dans la salle de début", 1);
-        chaise = new Item("Chaise", "Bon, même si elle ne sert à rien, il faut quand même la mettre", 5);
-        epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, épée stylée", 2);
+        // Dï¿½fini les diffï¿½rents item dans le jeu
+        Item fleur, chaise, epee, cookie;
+
+        cookie = new Item("Cookie", "Cookie magique", 1);
+        fleur = new Item("Fleur", "Il y en a une dans la salle de dï¿½but", 1);
+        chaise = new Item("Chaise", "Bon, mï¿½me si elle ne sert ï¿½ rien, il faut quand mï¿½me la mettre", 5);
+        epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, ï¿½pï¿½e stylï¿½e", 2);
         this.player.getCurrentRoom().getItemList().addItem(fleur);
         
+        fortressEntrance.getItemList().addItem(cookie);
         fortressDungeon.getItemList().addItem(chaise);
         fortressDungeon.getItemList().addItem(epee);
     }
@@ -143,53 +150,69 @@ public class GameEngine {
             this.userInterface.showImage(player.getCurrentRoom().getImageName());
     }
 
+    private void printMovesLeft() {
+        this.userInterface.println("You have " + this.commandsLeft + " commands lefts !");
+    }
+
+    private void printGameOver() {
+        this.userInterface.println("----- ! GAME OVER ! -----");
+    }
+
     /**
      * Permet d'executer une commande saisie par l'utilisateur
      * @param rawCommand Commande que l'utilisateur a saisie
      */
     public void interpretCommand(final String rawCommand) {
         this.userInterface.println( "> " + rawCommand );
-        Command command = this.parser.getCommand( rawCommand.toLowerCase() );
-
-        if (command.isUnknown()) {
-            this.userInterface.println("I don't know what you mean ...");
-            return;
-        }
         
-        switch(command.getCommandWord().toLowerCase()) {
-            case "go":
-                goRoom(command);
+        Command command = this.parser.getCommand(rawCommand.toLowerCase());
+        CommandWord commandWord = this.parser.getCommandWords().getCommand(command.getCommandWord());
+        
+        boolean successCommand = true;
+
+        switch(commandWord) {
+            case GO:
+                successCommand = goRoom(command);
+                break;
+            case QUIT:
+                successCommand = quit(command);
                 return;
-            case "quit":
-                quit(command);
-                return;
-            case "help":
-                printHelp();
-                return;
-            case "look":
-                look(command);
-                return;
-            case "eat":
-                eat();
-                return;
-            case "back":
-                back(command);
-                return;
-            case "test":
-                test(command);
-                return;
-            case "take":
-                take(command);
-                return;
-            case "drop":
-                drop(command);
-                return;
-            case "inventory":
-                inventory(command);
-                return;
+            case HELP:
+                successCommand = help(command);
+                break;
+            case LOOK:
+                successCommand = look(command);
+                break;
+            case EAT:
+                successCommand = eat(command);
+                break;
+            case BACK:
+                successCommand = back(command);
+                break;
+            case TEST:
+                successCommand = test(command);
+                break;
+            case TAKE:
+                successCommand = take(command);
+                break;
+            case DROP:
+                successCommand = drop(command);
+                break;
+            case INVENTORY:
+                successCommand = inventory(command);
+                break;
             default:
                 this.userInterface.println("Unknown command !");
-                return;
+                break;
+        }
+
+        if(successCommand) {
+            this.commandsLeft--;
+            printMovesLeft();
+            if(this.commandsLeft == 0) {
+                endGame();
+                printGameOver();
+            }
         }
     }
     
@@ -197,29 +220,36 @@ public class GameEngine {
     /**
      * Permet d'acceder a une piece selon la direction et affiche la salle ou nous sommes
      * @param command Direction dans laquelle le joueur souhaite aller
+     * @return Si la commande a fonctionnÃ©
      */
-    private void goRoom(final Command command) {
+    private boolean goRoom(final Command command) {
         if (!command.hasSecondWord()){
             this.userInterface.println("Go where ?");
-            return;
+            return false;
         }
         
         Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
         
         if (nextRoom == null){
             this.userInterface.println("There is no door !");
-            return;
+            return false;
         }
         
         this.player.setCurrentRoom(nextRoom, true);
         printLocationInfo();
+        return true;
+    }
+
+    public boolean help(final Command command) {
+        this.printHelp();
+        return true;
     }
     
     
     /**
      * Permet de quitter le jeu
      * @param command Commande ecrite par l'utilisateur
-     * @return Vraie si le joueur ecrit quitter ou faux si il ya un second mot
+     * @return Si la commande a fonctionnÃ©
      */
     private boolean quit(final Command command) {
         if (command.hasSecondWord()){
@@ -228,67 +258,89 @@ public class GameEngine {
         }
         
         this.userInterface.println("Thank you for playing.  Good bye.");
-        this.userInterface.enable(false);
+        this.endGame();
         return true;
     } 
     
     /**
      * Permet d'afficher la description complete de la salle dans laquelle nous sommes actuellement
      * @param command Commande look
+     * @return Si la commande a fonctionnÃ©
      */
-    private void look(Command command) {
+    private boolean look(Command command) {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
-            this.userInterface.println(this.player.lookForItem(commandWord));
-            return;
+            this.userInterface.println(this.player.getCurrentRoom().lookForItem(commandWord));
         }
-        
-        this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
+        else
+            this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
+        return true;
     }
      
     /**
      * Permet d'afficher que nous avons mange
+     * @param command Commande eat
+     * @return Si la commande a fonctionnÃ©
      */
-    private void eat() {
-        this.userInterface.println("You have eaten now and you are not hungry any more.");
+    private boolean eat(final Command command) {
+        if(command.hasSecondWord()) {
+            if(!command.getSecondWord().equalsIgnoreCase("cookie")) {
+                this.userInterface.println("You can't eat something else than cookie.");
+                return false;
+            }
+        }
+
+        if(!this.player.getInventory().hasItem("cookie")) {
+            this.userInterface.println("You haven't cookie in your inventory !");
+            return false;
+        }
+
+        final Item cookie = this.player.getInventory().getItem("cookie");
+        this.player.getInventory().removeItem(cookie);
+        this.player.setMaxWeight(this.player.getMaxWeight() * 2);
+
+        this.userInterface.println("You have eaten " + cookie.getName() + " ! You are able to carry 2 times more !");
+        return true;
     }
     
     /**
      * Permet de retourner dans la salle precedente
      * @param command Commande back
      */
-    private void back(final Command command) {
+    private boolean back(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("Back what ?");
-            return;
+            return false;
         }
         
         if(!this.player.hasPreviousRoom()) {
             this.userInterface.println("There is any previous room !");
-            return;
+            return false;
         }
         
         this.player.goPreviousRoom();
         printLocationInfo();
+        return true;
     }
     
     
     /**
-     * Permet de tester un ensemble de commandes enregistrées dans un fichier et les exécute
-     * @param command Commande test lors de l'exécution
+     * Permet de tester un ensemble de commandes enregistrï¿½es dans un fichier et les exï¿½cute
+     * @param command Commande test lors de l'exï¿½cution
+     * @return Si la commande a fonctionnÃ©
      */
-    private void test(final Command command) {
+    private boolean test(final Command command) {
 
         if(!command.hasSecondWord()) {
             this.userInterface.println("You need to choose a file to test commands !");
-            return;
+            return false;
         }
         
         File file = new File(command.getSecondWord() + ".txt");
 
         if(!file.exists()) {
             this.userInterface.println("file named " + file.getName() + " is not found !");
-            return;
+            return false;
         }
 
         try {
@@ -298,43 +350,63 @@ public class GameEngine {
                 String rawCommand = commandScanner.nextLine();
                 this.interpretCommand(rawCommand);
             }
+
+            commandScanner.close();
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
             this.userInterface.println("Unable to read file " + file.getName() + "!");
-            return;
+            return false;
         }
+
+        return true;
     }
     
     /**
-     * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une pièce
-     * @param command Commande "take" au moment de l'exécution
+     * Permet d'afficher la rï¿½ponse du jeu quand le joueur veut rï¿½cupï¿½rer un objet dans une piï¿½ce
+     * @param command Commande "take" au moment de l'exï¿½cution
+     * @return Si la commande a fonctionnÃ©
      */
-    private void take(final Command command) {
+    private boolean take(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Take what ?");
-            return;
+            return false;
         }
-        this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+        else {
+            this.userInterface.println(this.player.takeItem(command.getSecondWord()));
+            return true;
+        }
     }   
     
     /**
-     * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la pièce
+     * Permet d'afficher la rï¿½ponse du jeu quand le joueur veut dï¿½poser un objet dans la piï¿½ce
      * @param command Commande "drop" que le joueur a saisi
+     * @return Si la commande a fonctionnÃ©
      */
-    private void drop(final Command command) {
+    private boolean drop(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Drop what ?");
-            return;
+            return false;
         }
-        this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+        else {
+            this.userInterface.println(this.player.dropItem(command.getSecondWord()));
+            return true;
+        }
     }
     
-    private void inventory(final Command command) {
+    /**
+     * Permet d'afficher l'inventaire du joueur
+     * @param command Commande "inventory" pour afficher la commande
+     * @return Si la commande a fonctionnÃ©
+     */
+    private boolean inventory(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("I dont understand what do you want...");
-            return;
+            return false;
         }
-        this.userInterface.println("My Inventory : " + this.player.getInventoryContent());
+        else {
+            this.userInterface.println("My Inventory : " + this.player.getInventoryContent());
+            return true;
+        }
     }
 }

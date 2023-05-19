@@ -1,6 +1,6 @@
 import java.util.HashMap;
 
-/*
+/**
  * Class Room - a room in an adventure game.
  *
  * This class is part of the "World of Zuul" application. 
@@ -88,8 +88,16 @@ public class Room
         return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
     }
     
+    /**
+     * Récupère la liste des Items disponible dans la salle
+     * @return ItemList de la salle
+     */
     public ItemList getItemList() {
         return this.items;
+    }
+    
+    public String lookForItem(final String itemName) {
+        return this.items.getItem(itemName) != null ? this.items.getItem(itemName).getLongDescription() : "Item not found";
     }
     
     /**
@@ -101,10 +109,12 @@ public class Room
             return "No items here";
         
         StringBuilder itemContent = new StringBuilder();
+        
         for(Item item : items.getContent()) {
             itemContent.append("\"" + item.getName() + "\": ");
             itemContent.append("\t" + item.getLongDescription() + "\n");
         }
+        
         return "Available items (" + items.getSize() + ") : " + itemContent.toString();
     }
 }

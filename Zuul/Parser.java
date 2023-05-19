@@ -28,7 +28,11 @@ public class Parser
     public Parser() 
     {
         this.aCommandWords = new CommandWords();
-    } // Parser()
+    }
+
+    public CommandWords getCommandWords() {
+        return this.aCommandWords;
+    }
 
     /**
      * Get a new command from the user. The command is read by

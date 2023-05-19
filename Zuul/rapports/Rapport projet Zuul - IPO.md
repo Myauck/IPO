@@ -1096,7 +1096,7 @@ Pour créer nos fichier de test de commandes, nous devons aller dans le dossier 
 
 ###### Exercice 7.29
 
-Pour Refactoring notre classe `GameEngine` en deux classes distinctes, nous devons comprendre tout d'abord quelle fonction doit aller dans laquelle des deux classes, soit celle de `GameEngine` qui comporte les éventuelles actions et commande effectuées lors de la partie, et une autre, `Player` qui contient les différentes variables qui vont influencer le joueur.
+Tout d'abord il faut connaître le terme de Refactoring. Le Refactoring est une expression qu'on utiliser pour "factoriser" des fonctions et des classes. Par exemple Pour Refactoring notre classe `GameEngine` en deux classes distinctes, nous devons comprendre tout d'abord quelle fonction doit aller dans laquelle des deux classes, soit celle de `GameEngine` qui comporte les éventuelles actions et commande effectuées lors de la partie, et une autre, `Player` qui contient les différentes variables qui vont influencer le joueur.
 
 Par exemple on peut noter que la fonction `goRoom(final Room room)` prend en compte un système d'affichage, un système de déplacement du joueur et un autre système d'affichage
 
@@ -1111,7 +1111,7 @@ private void goRoom(final Command command) {
 
     Room nextRoom = this.currentRoom.getExit(command.getSecondWord());
 
-    // Conditin qui vérifie si la salle récupérer est nulle POUR L'AFFICHAGE
+    // Conditin qui vérifie si la salle récupérée est nulle POUR L'AFFICHAGE
     if (nextRoom == null){
         this.userInterface.println("There is no door !");
         return;
@@ -1304,10 +1304,25 @@ private void goRoom(final Command command) {
 		à la fonction `setCurrentRoom` dans la classe Player de sauvegarder la derniere position
 		du joueur pour qu'il puisse revenir en arrière.
      */
+   
+    printLocationInfo();
 }
 ```
 
-Et finalement pour la fonction `look` :
+Et finalement pour la fonction `look`, on modifie `this.currentRoom` par `this.player.getCurrentRoom()` :
+
+```java
+private void look(Command command) {
+    if(command.hasSecondWord()) {
+        String commandWord = command.getSecondWord();
+        this.userInterface.println(this.player.lookForItem(commandWord));
+        return;
+    }
+    this.userInterface.println(this.player.getCurrentRoom().getLongDescription());
+}
+```
+
+
 
 
 <hr>
@@ -1871,11 +1886,48 @@ public class Player {
 }
 ```
 
+<hr>
 
+###### Exercice 7.35
 
+**Explication d'une énumération** :
 
+Une énumération est un modèle de classe utilisé pour représenter un état ou un ensemble de possibilités. On peut comparer une énumération à une liste qui n'est pas modifiable (on dit aussi d'une liste immutable) comme les jours de la semaine :
 
+*immutable -> non mutable -> non modifiable*
 
+Une énumération qui liste les jours de la semaine est par exemple *LUNDI*, *MARDI*, *MERCREDI*, *JEUDI*, *VENDREDI*, *SAMEDI*, *DIMANCHE*. Et aucune autre valeur dans les jours de la semaine n'existent à part celle-ci. Il s'agit donc d'une liste non modifiable définie par défaut.
 
+Un autre exemple d'un modèle d'énumération qui peut être intégré à notre jeu serait, par exemple, l'ensemble de nos salles dans notre jeu, ou l'ensemble de nos commandes: dans cette situation ca serait :
 
+<u>Enumération de mes commandes</u> : *GO*, *BACK*, *HELP*, *LOOK*, *QUIT*, *EAT*, *TAKE*, *DROP* (car on n'a aucune autre commande)
+
+<u>Enumération de mes salles</u> : *KING_PALACE*, *FORTRESS_DUNGEON*, *FORTRESS_JAIL*, *FORTRESS_UNDERGROUND*, *ARTEFACTS_ROOM*, *FORTRESS_YARD*, *FORTRESS_ENTRANCE*, *SILVER_RIVER*, *JOYFUL_AVENUE*, *CASCADE_OF_DIAMONDS*, *SECRET_CASCADE_OF_DIAMONDS*, *FORBIDDEN_FOREST*, *FORBIDDEN_FOREST_CAVE* (car on a aucune autre salle)
+
+**Convention** : une énumération doit être écrit toujours en majuscules : "King palace" => "KING_PALACE"
+
+<u>**Programme**</u> :
+
+Nous souhaitons intégrer une énumération à notre jeu, et plus particulièrement l'énumération commande. Pour cela nous allons effectuer différents ajouts et modifications :
+
+Tout d'abord créons une nouvelle énumération du nom de `CommandWord` :
+
+![](C:\Users\leoga\Projects\IPO\Zuul\rapports\screens\new-enum.jpg)
+
+Puis écrivons dedans nos commandes disponibles :
+
+```java
+/**
+ * Enumeration CommandWord - énumération qui représente la liste
+ * des commandes disponibles dans le jeu
+ *
+ * @author Leo Gaillet
+ * @version 1.0.1
+ */
+public enum CommandWord {
+    // Il s'agit de mes commandes disponible dans le jeu
+    GO, HELP, QUIT, LOOK, EAT, BACK, TEST, TAKE, DROP, INVENTORY;
+}
+
+```
 
