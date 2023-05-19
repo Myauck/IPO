@@ -58,6 +58,24 @@ public class Room
     public Room getExit(final String direction) {
         return this.exits.get(direction.toLowerCase());
     }
+
+    /**
+     * Permet de savoir si la direction vers une sortie existe
+     * @param direction Direction de la sortie
+     * @return Si la sortie est disponible
+     */
+    public boolean isExit(final String direction)  {
+        return this.exits.containsKey(direction);
+    }
+
+    /**
+     * Permet de savoir si une salle vers une sortie existe
+     * @param room Salle de la sortie
+     * @return Si la salle est accessible
+     */
+    public boolean isExit(final Room room) {
+        return this.exits.containsValue(room);
+    }
     
     /**
      * Setter qui affecte une nouvelle salle de sortie en fonction de la direction que l'on a choisie
@@ -89,7 +107,7 @@ public class Room
     }
     
     /**
-     * Récupère la liste des Items disponible dans la salle
+     * Rï¿½cupï¿½re la liste des Items disponible dans la salle
      * @return ItemList de la salle
      */
     public ItemList getItemList() {

@@ -78,6 +78,13 @@ public class Player {
             this.setCurrentRoom(previousRoom, false);
         return previousRoom;
     }
+
+    /**
+     * Permet d'effacer l'historique des salles visitées
+     */
+    public void clearPreviousRooms() {
+        this.previousRooms.clear();
+    }
     
     public String takeItem(final String itemName) {
         Item foundItem = currentRoom.getItemList().getItem(itemName);

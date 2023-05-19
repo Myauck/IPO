@@ -228,15 +228,23 @@ public class GameEngine {
             return false;
         }
         
-        Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
+        final Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
         
         if (nextRoom == null){
             this.userInterface.println("There is no door !");
             return false;
         }
+
+        final Room currentRoom = this.player.getCurrentRoom();
         
         this.player.setCurrentRoom(nextRoom, true);
         printLocationInfo();
+
+        if(!nextRoom.isExit(currentRoom)) {
+            this.userInterface.println("You can't go back !");
+            this.player.clearPreviousRooms();
+        }
+
         return true;
     }
 
