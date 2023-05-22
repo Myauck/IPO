@@ -303,8 +303,8 @@ public class GameEngine {
         this.player.setCurrentRoom(nextRoom, true);
         printLocationInfo();
 
-        if(!nextRoom.isExit(currentRoom)) {
-            this.userInterface.println("You can't go back !");
+        if(!nextRoom.hasExit(currentRoom)) {
+            this.userInterface.println("You can't go back ! You are trapped !");
             this.player.clearPreviousRooms();
         }
 
