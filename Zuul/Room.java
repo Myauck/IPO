@@ -16,22 +16,34 @@ import java.util.HashMap;
 public class Room
 {
     
+    private final String name;
     private final String description;
-    private final HashMap<String, Room> exits = new HashMap<String, Room>();
     private final String imageName;
-    private final ItemList items;
+
+    private final HashMap<String, Room> exits = new HashMap<String, Room>();
+    private final ItemList content;
     
     
     /**
      * Constructeur de la classe Room
      * Permet d'initialiser une nouvelle salle
+     * @param name Nom de la salle
      * @param description Description de la salle instanciee
      * @param imageName Nom de l'image
      */
-    public Room(final String description, final String imageName) {
+    public Room(final String name, final String description, final String imageName) {
+        this.name = name;
         this.description = description;
         this.imageName = imageName;
-        this.items = new ItemList();
+        this.content = new ItemList();
+    }
+
+    /**
+     * Permet de récupérer le nom de la salle
+     * @return Nom de la salle instanciée
+     */
+    public String getName() {
+        return this.name;
     }
     
     /**
@@ -40,6 +52,22 @@ public class Room
      */
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getShortDescription() {
+        return "Room : " + this.name + " | " + this.description + " |";
+    }
+
+    /**
+     * Getter qui permet de recuperer l'integralite des informations de la salle
+     * @return Description complete de la salle instanciee ainsi que la presence des items
+     */
+    public String getLongDescription() {
+        return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
     }
  
     /**
@@ -69,7 +97,7 @@ public class Room
     }
 
     /**
-     * Permet de savoir si une salle vers une sortie existe
+     * (Surcharge de Fonction) Permet de savoir si une salle vers une sortie existe
      * @param room Salle de la sortie
      * @return Si la salle est accessible
      */
@@ -97,25 +125,17 @@ public class Room
             availableExits += keys + " ";
         return availableExits;
     }
-
-    /**
-     * Getter qui permet de recuperer l'integralite des informations de la salle
-     * @return Description complete de la salle instanciee ainsi que la presence des items
-     */
-    public String getLongDescription() {
-        return getDescription() + "\n" + getExitsString() + "\n" + getItemString();
-    }
     
     /**
-     * R�cup�re la liste des Items disponible dans la salle
+     * Récupére la liste des Items disponible dans la salle
      * @return ItemList de la salle
      */
-    public ItemList getItemList() {
-        return this.items;
+    public ItemList getRoomInventory() {
+        return this.content;
     }
     
     public String lookForItem(final String itemName) {
-        return this.items.getItem(itemName) != null ? this.items.getItem(itemName).getLongDescription() : "Item not found";
+        return this.content.getItem(itemName) != null ? this.content.getItem(itemName).getLongDescription() : "Item not found";
     }
     
     /**
@@ -123,16 +143,16 @@ public class Room
      * @return Liste des descriptions des items dans la salle
      */
     public String getItemString() {
-        if(items.isEmpty())
+        if(content.isEmpty())
             return "No items here";
         
         StringBuilder itemContent = new StringBuilder();
         
-        for(Item item : items.getContent()) {
+        for(Item item : content.getContent()) {
             itemContent.append("\"" + item.getName() + "\": ");
             itemContent.append("\t" + item.getLongDescription() + "\n");
         }
         
-        return "Available items (" + items.getSize() + ") : " + itemContent.toString();
+        return "Available items (" + content.getSize() + ") : " + itemContent.toString();
     }
 }

@@ -16,7 +16,7 @@ public class CommandWords {
     private final HashMap<String, CommandWord> registeredCommandWords = new HashMap<String, CommandWord>();
     
     /**
-     * Constructeur qui permet d'initialiser les diff�rentes commandes possibles.
+     * Constructeur qui permet d'initialiser les différentes commandes possibles.
      */
     public CommandWords() {
         this.registeredCommandWords.put("go", CommandWord.GO);
@@ -33,9 +33,9 @@ public class CommandWords {
 
     
     /**
-     * V�rifie si la cha�ne donn�e en param�tre correspond � une commande
+     * Vérifie si la chaéne donnée en paramétre correspond é une commande
      * @param commandString Commande que l'on cherche a verifier
-     * @return Si la cha�ne est bien une commande
+     * @return Si la chaéne est bien une commande
      */
     public boolean isCommand(final String commandString ) {
         return this.registeredCommandWords.containsKey(commandString.toLowerCase());
@@ -46,7 +46,7 @@ public class CommandWords {
     }
     
     /**
-     * Permet de r�cup�rer l'ensemble des commandes disponibles dans le jeu
+     * Permet de récupérer l'ensemble des commandes disponibles dans le jeu
      * @return Commandes disponibles
      */
     public String getCommandList() {

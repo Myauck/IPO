@@ -1,9 +1,9 @@
 import java.util.Stack;
 
 /**
- * Les differents attributs et fonctions li�es au Joueur, permettant
- * ainsi de se d�placer, de connaitre sa salle actuelle, de savoir ce qu'il a sur lui
- * de savoir ses salles pr�c�dentes. Tout ce qui est li� ou influence sur le Joueur.
+ * Les differents attributs et fonctions liées au Joueur, permettant
+ * ainsi de se déplacer, de connaitre sa salle actuelle, de savoir ce qu'il a sur lui
+ * de savoir ses salles précédentes. Tout ce qui est lié ou influence sur le Joueur.
  *
  * @author Leo Gaillet
  * @version 19/04/2023
@@ -11,29 +11,28 @@ import java.util.Stack;
 public class Player {
     
     private final String name;
-    private Room currentRoom;
-    private final Stack<Room> previousRooms;
-    private final ItemList items;
     private int maxWeight;
-    private int weight;
+    private Room currentRoom;
+
+    private final Stack<Room> previousRooms;
+    private final ItemList playerInventory;
     
     /**
      * Constructeur de la classe Player
      * @param name Nom du joueur dans le jeu
-     * @param maxWeight Poids maximal que peut poss�der l'inventaire du joueur
+     * @param maxWeight Poids maximal que peut posséder l'inventaire du joueur
      */
     public Player(final String name, final int maxWeight){
         this.name = name;
-        this.previousRooms = new Stack<Room>();
-        this.items = new ItemList();
-        
         this.maxWeight = maxWeight;
-        this.weight = 0;
+        
+        this.previousRooms = new Stack<Room>();
+        this.playerInventory = new ItemList();
         
     }
     
     /**
-     * Permet de r�cup�rer le nom du joueur
+     * Permet de récupérer le nom du joueur
      * @return Nom du joueur
      */
     public String getName() {
@@ -41,7 +40,23 @@ public class Player {
     }
     
     /**
-     * Permet de r�cup�rer la salle dans laquelle le joueur se trouve actuellement
+     * Permet de récupérer la capacité au joueur de porter des items
+     * @return Poids maximal que le joueur peut porter
+     */
+    public int getMaxWeight() {
+        return this.maxWeight;
+    }
+
+    /**
+     * Permet de définir une nouvelle capacité au joueur de porter des items
+     * @param maxWeight Nouvelle capacité de port du joueur
+     */
+    public void setMaxWeight(final int maxWeight) {
+        this.maxWeight = maxWeight;
+    }
+    
+    /**
+     * Permet de récupérer la salle dans laquelle le joueur se trouve actuellement
      * @return Salle du joueur actuelle
      */
     public Room getCurrentRoom() {
@@ -49,28 +64,26 @@ public class Player {
     }
     
     /**
-     * Permet de savoir si le joueur est d�j� all� dans d'autres salles pr�c�dentes
-     * @return V�rifie si le joueur peut retourner en arri�re
+     * Permet de savoir si le joueur est déjé allé dans d'autres salles précédentes
+     * @return Vérifie si le joueur peut retourner en arriére
      */
     public boolean hasPreviousRoom() {
         return this.previousRooms.size() != 0;
     }
     
     /**
-     * Permet de d�placer le joueur dans une nouvelle salle
-     * @param room Nouvelle salle o� le joueur sera d�plac�
-     * @param saveCurrentToPreviousRooms Autorise la sauvegarde de l'ancienne salle dans la liste des salles pr�c�dentes
+     * Permet de déplacer le joueur dans une nouvelle salle
+     * @param room Nouvelle salle oé le joueur sera déplacé
+     * @param savePreviousRoom Autorise la sauvegarde de l'ancienne salle dans la liste des salles précédentes
      */
-    public void setCurrentRoom(final Room room, final boolean saveCurrentToPreviousRooms) {
-        if(saveCurrentToPreviousRooms) {
-            this.previousRooms.push(this.currentRoom);
-        }
+    public void setCurrentRoom(final Room room, final boolean savePreviousRoom) {
+        if(savePreviousRoom) this.previousRooms.push(this.currentRoom);
         this.currentRoom = room;
     }
     
     /**
-     * Permet de d�placer le joueur dans son ancienne salle
-     * @return Salle o� le joueur compte se d�placer
+     * Permet de déplacer le joueur dans son ancienne salle
+     * @return Salle oé le joueur compte se déplacer
      */
     public Room goPreviousRoom() {
         Room previousRoom = this.previousRooms.pop();
@@ -87,54 +100,32 @@ public class Player {
     }
     
     public String takeItem(final String itemName) {
-        Item foundItem = currentRoom.getItemList().getItem(itemName);
+        Item foundItem = currentRoom.getRoomInventory().getItem(itemName);
         
         if(foundItem == null)
             return "Item in this room is not found !";
         
-        if(this.weight + foundItem.getWeight() > this.maxWeight)
+        if(this.playerInventory.getContentWeight() + foundItem.getWeight() > this.maxWeight)
             return "You can't take this item ! It's to heavy for you !";
         
-        this.weight += foundItem.getWeight();
-        this.items.addItem(foundItem);
-        this.currentRoom.getItemList().removeItem(foundItem);
+        this.playerInventory.addItem(foundItem);
+        this.currentRoom.getRoomInventory().removeItem(foundItem);
         
         return "You took the item " + foundItem.getName() + " !"; 
     }
     
     public String dropItem(final String itemName) {
-        if(!this.items.hasItem(itemName.toLowerCase()))
+        if(!this.playerInventory.hasItem(itemName.toLowerCase()))
             return "You have any item named like this on your player !";
         
-        Item item = this.items.getItem(itemName.toLowerCase());
-        this.currentRoom.getItemList().addItem(item);
-        this.weight -= item.getWeight();
-        this.items.removeItem(item);
+        Item item = this.playerInventory.getItem(itemName.toLowerCase());
+        this.currentRoom.getRoomInventory().addItem(item);
+        this.playerInventory.removeItem(item);
         return "You dropeed the item " + item.getName() + " in the room !"; 
     }
-    
-    public int getWeight() {
-        return this.weight;
-    }
-    
-    public int getMaxWeight() {
-        return this.maxWeight;
-    }
 
-    public void setMaxWeight(final int maxWeight) {
-        this.maxWeight = maxWeight;
-    }
-    
-    public String getInventoryContent() {
-        String response = "(" + this.items.getSize() + ")\n";
-        for(Item item : this.items.getContent()) {
-            response += "- " + item.getLongDescription() + "\n";
-        }
-        return response;
-    }
-
-    public ItemList getInventory() {
-        return this.items;
+    public ItemList getPlayerInventory() {
+        return this.playerInventory;
     }
     
 }

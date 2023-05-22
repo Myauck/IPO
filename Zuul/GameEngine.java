@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 /**
  * Classe Game - le moteur du jeu d'aventure Zuul.
@@ -14,6 +15,9 @@ public class GameEngine {
     private Parser parser;
     private UserInterface userInterface;
 
+    private final HashMap<String, Room> rooms;
+    private final HashMap<String, Item> items;
+
     private int commandsLeft = 100;
 
     /**
@@ -22,11 +26,20 @@ public class GameEngine {
     public GameEngine() {
         this.parser = new Parser();
         this.player = new Player("Arthur", 2);
+
+        this.rooms = new HashMap<String, Room>();
+        this.items = new HashMap<String, Item>();
+
         this.createRooms();
+        this.createItems();
+
+        this.initGameStructure();
+        
+        this.player.setCurrentRoom(this.rooms.get("Fortress Entrance"), false);
     }
     
     /**
-     * Permet de d�finir une interface utilisateur au moteur du jeu
+     * Permet de définir une interface utilisateur au moteur du jeu
      * @param userInterface Interface utilisateur necessaire au moteur du jeu
      */
     public void setGUI(final UserInterface userInterface) {
@@ -34,8 +47,28 @@ public class GameEngine {
         this.printWelcome();
     }
 
+    /**
+     * Permet d'arrêter le jeu
+     */
     public void endGame() {
+        this.userInterface.println("Merci d'avoir joué !");
         this.userInterface.enable(false);
+    }
+
+    /**
+     * Permet de vérifier si la fin du jeu est validée
+     */
+    public void winGame() {
+        final Room portalsRoom = rooms.get("Portals Room");
+        if(
+            this.player.getCurrentRoom() == portalsRoom
+            && portalsRoom.getRoomInventory().hasItem("ArtefactDeDestruction")
+        ){
+            this.userInterface.println("\n\n");
+            this.userInterface.println("Vous avez jeté l'artéfact de destruction dans la salle des portails !");
+            this.userInterface.println("Vous avez réussi votre mission ! vous avez réussi à empêcher le sorcier de détruire la forteresse");
+            endGame();
+        }
     }
 
     /**
@@ -43,83 +76,104 @@ public class GameEngine {
      */
     private void createRooms() {
         
-        // Définis les diff�rents endroits possible dans le jeu
-        Room kingPalace, fortressPrison, fortressDungeon, fortressUnderground, artefactsRoom, portalsRoom,
-            fortressYard, fortressEntrance, silverRiver, joyfulAvenue, cascadesOfDiamonds, secretCascadeOfDiamonds,
-            forbiddenForest, forbiddenForestCave;
+        // Définis les différents endroits possible dans le jeu
+        Room[] rooms = new Room[] {
+            new Room("King Floor", "You are certainly appreciated by the King.", "etages-du-roi.jpg"),
+            new Room("Jail", "It can be some prisoners in there.", "prison-du-fort.jpg"),
+            new Room("Dungeon", "It's a privilege to be here.", "dongeon-du-fort.jpg"),
+            new Room("Basements", "You may see some bats.", "sous-bassements-du-fort.jpg"),
+            new Room("Artefacts Room", "You can feel strange things coming from this place.", "salle-des-artefacts.jpg"),
+            new Room("Portals Room", "Portals may teleport you, even if the way by foot is impossible", "salle-des-portails.jpg"),
+            new Room("Yard", "See how beautiful are flowers around here.", "jardin-du-fort.jpg"),
+            new Room("Fortress Entrance", "Why is this door so tall ?", "entree-du-fort.jpg"),
+            new Room("Silver River", "Is this silver or just the snow falling on it ?", "riviere-d-argent.jpg"),
+            new Room("Joyful Avenue", "This avenue goes so far away that I can't see the end.", "avenue-de-la-joie.jpg"),
+            new Room("Cascades of Diamondstones", "The water is so turquoise that I can't see the difference with the color of the diamond", "cascade-aux-diamants.jpg"),
+            new Room("Secret Place", "Who could pretend that under the cascade it would be an door ?", "salle-secrete-cascade-aux-diamants.jpg"),
+            new Room("Forbidden Forest", "The only thing that I can say about this place is it's make me goosebumps", "foret-interdite.jpg"),
+            new Room("Forbidden Forest's Cave", "This place is filled by the Darkness", "grotte-de-la-foret-interdite.jpg")
+        };
 
-        // Initialise les différentes Rooms
-        kingPalace = new Room("The King's Floor. You are certainly appreciated by the King.", "etages-du-roi.jpg");
-        fortressDungeon = new Room("The Dungeon of the Fortress. It's a privilege to be here.", "dongeon-du-fort.jpg");
-        fortressPrison = new Room("The Prison of the Fortress. It can be some prisoners in there.", "prison-du-fort.jpg");
-        fortressUnderground = new Room("The Basement of the Fortress. You may see some bats.", "sous-bassements-du-fort.jpg"); 
-        artefactsRoom = new Room("The Artefacts Room. You can feel strange things coming from this place.", "salle-des-artefacts.jpg");
-        portalsRoom = new Room("The portal room. Portals may teleport you, even if the way by foot is impossible", "salle-des-portails.jpg");
-        fortressYard = new Room("The Fortress Yard. See how beautiful are flowers around here.", "jardin-du-fort.jpg");
-        fortressEntrance = new Room("The Entrance of The Fortress. Why is this door so tall ?", "entree-du-fort.jpg");
-        silverRiver = new Room("The Silver River. Is this silver or just the snow falling on it ?", "riviere-d-argent.jpg");
-        joyfulAvenue = new Room("The Joyful Avenue. This avenue goes so far away that I can't see the end.", "avenue-de-la-joie.jpg");
-        cascadesOfDiamonds = new Room("The Cascades of Diamondstones, The water is so turquoise that I can't see the difference with the color of the diamond", "cascade-aux-diamants.jpg");
-        secretCascadeOfDiamonds = new Room("The Secret Place of the Cascade of Diamonds, Who could pretend that under the cascade it would be an door ?", "salle-secrete-cascade-aux-diamants.jpg");
-        forbiddenForest = new Room("The Forbidden Forest. The only thing that I can say about this place is it's make me goosebumps", "foret-interdite.jpg");
-        forbiddenForestCave = new Room("The Cave of The Forbidden Forest. This place is filled by the Darkness", "grotte-de-la-foret-interdite.jpg");
+        for(Room room : rooms) this.rooms.put(room.getName(), room);
+    }
 
+    /**
+     * Permet de créer les items et de les ajouter dans la liste des items disponibles
+     */
+    private void createItems() {
 
-        // Affecte les différentes sorties de salles pour chaque salles
-        kingPalace.setExit("down", fortressDungeon);
+        Item[] items = new Item[] {
+            new Item("Cookie", "Cookie magique qui permet d'avoir une capacité de stockage plus importante", 1),
+            new Item("Déphaseur", "Permet de se téléporter au début du jeu", 3),
+            new Item("CléDePrison", "La clé du dongeon qui permet d'ouvrir la porte du de la prison", 1),
+            new Item("CléDuRoi", "La clé qui permet d'accéder à la chambre du roi", 1),
+            new Item("ArtefactDeTéléportation", "Objet qui permet de se téléporter", 2),
+            new Item("ArtefactDeDestruction", "Objet qui permet de détruire une salle", 1)
+        };
 
-        fortressPrison.setExit("east", fortressDungeon);
+        for(Item item : items) this.items.put(item.getName(), item);
+
+    }
+
+    /**
+     * Permet de créer la structure du jeu par rapport aux salles disponibles ainsi que les items disponibles
+     */
+    private void initGameStructure() {
         
-        fortressDungeon.setExit("west", fortressPrison);
-        fortressDungeon.setExit("up", kingPalace);
-        fortressDungeon.setExit("down", fortressUnderground);
-        fortressDungeon.setExit("south", fortressYard);
+        rooms.get("King Floor").setExit("down", this.rooms.get("Dungeon"));
 
-        fortressUnderground.setExit("up", fortressDungeon);
-
-        artefactsRoom.setExit("east", fortressYard);
-
-        fortressYard.setExit("south", fortressEntrance);
-        fortressYard.setExit("north", fortressDungeon);
-        fortressYard.setExit("west", artefactsRoom);
-        fortressYard.setExit("east", portalsRoom);
-
-        portalsRoom.setExit("west", fortressYard);
-
-        fortressEntrance.setExit("north", fortressYard);
-        fortressEntrance.setExit("south", joyfulAvenue);
-
-        silverRiver.setExit("east", joyfulAvenue);
-
-        joyfulAvenue.setExit("north", fortressEntrance);
-        joyfulAvenue.setExit("east", cascadesOfDiamonds);
-        joyfulAvenue.setExit("west", silverRiver);
-        joyfulAvenue.setExit("south", forbiddenForest);
-
-        cascadesOfDiamonds.setExit("west", joyfulAvenue);
-        cascadesOfDiamonds.setExit("down", secretCascadeOfDiamonds);
-
-        forbiddenForest.setExit("north", joyfulAvenue);
-        forbiddenForest.setExit("down", forbiddenForestCave);
-
-        secretCascadeOfDiamonds.setExit("up", cascadesOfDiamonds);
-
-        forbiddenForestCave.setExit("up", forbiddenForest);
+        rooms.get("Jail").setExit("east", rooms.get("Dungeon"));
         
-        this.player.setCurrentRoom(fortressEntrance, false);
-        
-        // D�fini les diff�rents item dans le jeu
-        Item fleur, chaise, epee, cookie;
+        rooms.get("Dungeon").setExit("west", rooms.get("Jail"));
+        rooms.get("Dungeon").setExit("up", rooms.get("King Floor"));
+        rooms.get("Dungeon").setExit("down", rooms.get("Basements"));
+        rooms.get("Dungeon").setExit("south", rooms.get("Yard"));
+        rooms.get("Dungeon").getRoomInventory().addItems(
+            items.get("CléDePrison"), items.get("CléDuRoi")
+        );
 
-        cookie = new Item("Cookie", "Cookie magique", 1);
-        fleur = new Item("Fleur", "Il y en a une dans la salle de d�but", 1);
-        chaise = new Item("Chaise", "Bon, m�me si elle ne sert � rien, il faut quand m�me la mettre", 5);
-        epee = new Item("Epee", "Qui dit, monde fantastique, dit aussi, �p�e styl�e", 2);
-        this.player.getCurrentRoom().getItemList().addItem(fleur);
+        rooms.get("Basements").setExit("up", rooms.get("Dungeon"));
+
+        rooms.get("Artefacts Room").setExit("east", rooms.get("Yard"));
+
+        rooms.get("Yard").setExit("south", rooms.get("Fortress Entrance"));
+        rooms.get("Yard").setExit("north", rooms.get("Dungeon"));
+        rooms.get("Yard").setExit("west", rooms.get("Artefacts Room"));
+        rooms.get("Yard").setExit("east", rooms.get("Portals Room"));
+
+        rooms.get("Portals Room").setExit("west", rooms.get("Yard"));
+        rooms.get("Portals Room").getRoomInventory().addItem(
+            items.get("ArtefactDeTéléportation")
+        );
+
+        rooms.get("Fortress Entrance").setExit("north", rooms.get("Yard"));
+        rooms.get("Fortress Entrance").setExit("south", rooms.get("Joyful Avenue"));
+        rooms.get("Fortress Entrance").getRoomInventory().addItem(
+            items.get("Cookie")
+        );
+
+        rooms.get("Silver River").setExit("east", rooms.get("Joyful Avenue"));
+
+        rooms.get("Joyful Avenue").setExit("north", rooms.get("Fortress Entrance"));
+        rooms.get("Joyful Avenue").setExit("east", rooms.get("Cascades of Diamondstones"));
+        rooms.get("Joyful Avenue").setExit("west", rooms.get("Silver River"));
+        rooms.get("Joyful Avenue").setExit("south", rooms.get("Forbidden Forest"));
+
+        rooms.get("Cascades of Diamondstones").setExit("west", rooms.get("Joyful Avenue"));
+        rooms.get("Cascades of Diamondstones").setExit("down", rooms.get("Secret Place"));
+
+        rooms.get("Forbidden Forest").setExit("north", rooms.get("Joyful Avenue"));
+        rooms.get("Forbidden Forest").setExit("down", rooms.get("Forbidden Forest Cave"));
+
+        rooms.get("Secret Place").setExit("up", rooms.get("Cascades of Diamondstones"));
+
+        rooms.get("Forbidden Forest Cave").setExit("up", rooms.get("Forbidden Forest"));
+        rooms.get("Forbidden Forest Case").getRoomInventory().addItem(
+            items.get("ArtefactDeDestruction")
+        );
         
-        fortressEntrance.getItemList().addItem(cookie);
-        fortressDungeon.getItemList().addItem(chaise);
-        fortressDungeon.getItemList().addItem(epee);
+
+        
     }
     
     /**
@@ -128,7 +182,7 @@ public class GameEngine {
     private void printWelcome() {
         this.userInterface.println("Welcome to the Enchanted City !");
         this.userInterface.println("");
-        this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city");
+        this.userInterface.println("You are one of these guardian that protect the city from ennemies. A mean witcher had done something bad to the city, take the destruction artefact and throw it in the portals room");
         this.userInterface.println("Type 'help' if you need help.");
         printLocationInfo();
     }
@@ -298,13 +352,13 @@ public class GameEngine {
             }
         }
 
-        if(!this.player.getInventory().hasItem("cookie")) {
+        if(!this.player.getPlayerInventory().hasItem("cookie")) {
             this.userInterface.println("You haven't cookie in your inventory !");
             return false;
         }
 
-        final Item cookie = this.player.getInventory().getItem("cookie");
-        this.player.getInventory().removeItem(cookie);
+        final Item cookie = this.player.getPlayerInventory().getItem("cookie");
+        this.player.getPlayerInventory().removeItem(cookie);
         this.player.setMaxWeight(this.player.getMaxWeight() * 2);
 
         this.userInterface.println("You have eaten " + cookie.getName() + " ! You are able to carry 2 times more !");
@@ -333,8 +387,8 @@ public class GameEngine {
     
     
     /**
-     * Permet de tester un ensemble de commandes enregistr�es dans un fichier et les ex�cute
-     * @param command Commande test lors de l'ex�cution
+     * Permet de tester un ensemble de commandes enregistrées dans un fichier et les exécute
+     * @param command Commande test lors de l'exécution
      * @return Si la commande a fonctionné
      */
     private boolean test(final Command command) {
@@ -371,8 +425,8 @@ public class GameEngine {
     }
     
     /**
-     * Permet d'afficher la r�ponse du jeu quand le joueur veut r�cup�rer un objet dans une pi�ce
-     * @param command Commande "take" au moment de l'ex�cution
+     * Permet d'afficher la réponse du jeu quand le joueur veut récupérer un objet dans une piéce
+     * @param command Commande "take" au moment de l'exécution
      * @return Si la commande a fonctionné
      */
     private boolean take(final Command command) {
@@ -387,7 +441,7 @@ public class GameEngine {
     }   
     
     /**
-     * Permet d'afficher la r�ponse du jeu quand le joueur veut d�poser un objet dans la pi�ce
+     * Permet d'afficher la réponse du jeu quand le joueur veut déposer un objet dans la piéce
      * @param command Commande "drop" que le joueur a saisi
      * @return Si la commande a fonctionné
      */
@@ -413,8 +467,9 @@ public class GameEngine {
             return false;
         }
         else {
-            this.userInterface.println("My Inventory : " + this.player.getInventoryContent());
+            this.userInterface.println("My Inventory : " + this.player.getPlayerInventory().getStringContent());
             return true;
         }
     }
+    
 }
