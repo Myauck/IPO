@@ -29,6 +29,8 @@ public class CommandWords {
         this.registeredCommandWords.put("take", CommandWord.TAKE);
         this.registeredCommandWords.put("drop", CommandWord.DROP);
         this.registeredCommandWords.put("inventory", CommandWord.INVENTORY);
+        this.registeredCommandWords.put("charge", CommandWord.CHARGE);
+        this.registeredCommandWords.put("fire", CommandWord.FIRE);
     }
 
     

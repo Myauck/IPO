@@ -107,7 +107,7 @@ public class Room
      * @param room Salle de la sortie
      * @return Si la salle est accessible
      */
-    public boolean isExit(final Room room) {
+    public boolean hasExit(final Room room) {
         return this.exits.containsValue(room);
     }
     

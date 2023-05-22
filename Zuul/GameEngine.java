@@ -104,10 +104,10 @@ public class GameEngine {
 
         Item[] items = new Item[] {
             new Item("Cookie", "Cookie magique qui permet d'avoir une capacité de stockage plus importante", 1),
-            new Item("Déphaseur", "Permet de se téléporter au début du jeu", 3),
+            new Beamer("Déphaseur", "Permet de se téléporter au début du jeu", 3, true),
             new Item("CléDePrison", "La clé du dongeon qui permet d'ouvrir la porte du de la prison", 1),
             new Item("CléDuRoi", "La clé qui permet d'accéder à la chambre du roi", 1),
-            new Item("ArtefactDeTéléportation", "Objet qui permet de se téléporter", 2),
+            new Beamer("ArtefactDeTéléportation", "Objet qui permet de se téléporter", 2, false),
             new Item("ArtefactDeDestruction", "Objet qui permet de détruire une salle", 1)
         };
 
@@ -255,6 +255,12 @@ public class GameEngine {
             case INVENTORY:
                 successCommand = inventory(command);
                 break;
+            case CHARGE:
+                successCommand = charge(command);
+                break;
+            case FIRE:
+                successCommand = fire(command);
+                break;
             default:
                 this.userInterface.println("Unknown command !");
                 break;
@@ -322,7 +328,7 @@ public class GameEngine {
      * @param command Commande ecrite par l'utilisateur
      * @return Si la commande a fonctionné
      */
-    private boolean quit(final Command command) {
+    public boolean quit(final Command command) {
         if (command.hasSecondWord()){
             this.userInterface.println("Quit what?");
             return false;
@@ -338,7 +344,7 @@ public class GameEngine {
      * @param command Commande look
      * @return Si la commande a fonctionné
      */
-    private boolean look(Command command) {
+    public boolean look(Command command) {
         if(command.hasSecondWord()) {
             String commandWord = command.getSecondWord();
             this.userInterface.println(this.player.getCurrentRoom().lookForItem(commandWord));
@@ -353,7 +359,7 @@ public class GameEngine {
      * @param command Commande eat
      * @return Si la commande a fonctionné
      */
-    private boolean eat(final Command command) {
+    public boolean eat(final Command command) {
         if(command.hasSecondWord()) {
             if(!command.getSecondWord().equalsIgnoreCase("cookie")) {
                 this.userInterface.println("You can't eat something else than cookie.");
@@ -378,7 +384,7 @@ public class GameEngine {
      * Permet de retourner dans la salle precedente
      * @param command Commande back
      */
-    private boolean back(final Command command) {
+    public boolean back(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("Back what ?");
             return false;
@@ -400,7 +406,7 @@ public class GameEngine {
      * @param command Commande test lors de l'exécution
      * @return Si la commande a fonctionné
      */
-    private boolean test(final Command command) {
+    public boolean test(final Command command) {
 
         if(!command.hasSecondWord()) {
             this.userInterface.println("You need to choose a file to test commands !");
@@ -438,7 +444,7 @@ public class GameEngine {
      * @param command Commande "take" au moment de l'exécution
      * @return Si la commande a fonctionné
      */
-    private boolean take(final Command command) {
+    public boolean take(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Take what ?");
             return false;
@@ -454,7 +460,7 @@ public class GameEngine {
      * @param command Commande "drop" que le joueur a saisi
      * @return Si la commande a fonctionné
      */
-    private boolean drop(final Command command) {
+    public boolean drop(final Command command) {
         if(!command.hasSecondWord()) {
             this.userInterface.println("Drop what ?");
             return false;
@@ -470,15 +476,95 @@ public class GameEngine {
      * @param command Commande "inventory" pour afficher la commande
      * @return Si la commande a fonctionné
      */
-    private boolean inventory(final Command command) {
+    public boolean inventory(final Command command) {
         if(command.hasSecondWord()) {
             this.userInterface.println("I dont understand what do you want...");
             return false;
         }
-        else {
-            this.userInterface.println("My Inventory : " + this.player.getPlayerInventory().getStringContent());
+
+        this.userInterface.println("My Inventory : " + this.player.getPlayerInventory().getStringContent());
+        return true;
+    }
+
+    /**
+     * Permet de charger un objet
+     * @param command Commande "charge" pour charger un objet
+     * @return Si la commande a fonctionné
+     */
+    public boolean charge(final Command command) {
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("What do you want to charge ?");
+            return false;
+        }
+        
+        Item item = this.player.getPlayerInventory().getItem(command.getCommandWord());
+
+        if(item == null) {
+            this.userInterface.println("Vous n'avez aucun item qui s'appelle " + command.getCommandWord() + " dans votre inventaire");
+            return false;
+        }
+
+        if(item instanceof Beamer) {
+            Beamer beamer = (Beamer) item;
+            beamer.charge(this.player, this.player.getCurrentRoom());
+
+            if(beamer.isCharged(this.player)) {
+                this.userInterface.println("Votre téléporteur est déjà chargé !");
+                return false;
+            }
+
+            if(beamer.isUsed()) {
+                this.userInterface.println("Le téléporteur que vous portez est déjà utilisé et non réutilisable !");
+                return false;
+            }
+
+            this.userInterface.println("Vous avez chargé le téléporteur");
             return true;
         }
+
+        this.userInterface.println("Votre objet n'est pas un appareil qui peut être chargé !");
+        return false;
+
+    }
+
+    /**
+     * Permet d'exécuter un objet
+     * @param command Commande "fire" pour exécuter un objet
+     * @return Si la commande a fonctionné
+     */
+    public boolean fire(final Command command) {
+        if(!command.hasSecondWord()) {
+            this.userInterface.println("What do you want to fire ?");
+            return false;
+        }
+        
+        Item item = this.player.getPlayerInventory().getItem(command.getCommandWord());
+
+        if(item == null) {
+            this.userInterface.println("Vous n'avez aucun item qui s'appelle " + command.getCommandWord() + " dans votre inventaire");
+            return false;
+        }
+
+        if(item instanceof Beamer) {
+            Beamer beamer = (Beamer) item;
+
+            if(!beamer.isCharged(player)) {
+                this.userInterface.println("Votre téléporteur n'est pas chargé");
+                return false;
+            }
+
+            final Room teleportedRoom = beamer.fire(this.player);
+
+            player.setCurrentRoom(teleportedRoom, false);
+            player.clearPreviousRooms();
+
+            this.userInterface.println("Vous avez chargé le téléporteur qui vous a téléporté");
+            return true;
+        }
+
+        this.userInterface.println("Votre objet n'est pas un appareil qui peut être chargé !");
+        return false;
+
     }
 
 }
