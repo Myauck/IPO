@@ -264,8 +264,8 @@ public class GameEngine {
             this.commandsLeft--;
             printMovesLeft();
             if(this.commandsLeft == 0) {
-                endGame();
                 printGameOver();
+                endGame();
             }
         }
     }
@@ -277,19 +277,28 @@ public class GameEngine {
      * @return Si la commande a fonctionné
      */
     private boolean goRoom(final Command command) {
-        if (!command.hasSecondWord()){
+        if(!command.hasSecondWord()){
             this.userInterface.println("Go where ?");
             return false;
         }
         
         final Room nextRoom = this.player.getCurrentRoom().getExit(command.getSecondWord());
         
-        if (nextRoom == null){
+        if(nextRoom == null){
             this.userInterface.println("There is no door !");
             return false;
         }
 
         final Room currentRoom = this.player.getCurrentRoom();
+
+        if(nextRoom.isLocked()) {
+            if(nextRoom.tryToUnlock(this.player.getPlayerInventory()))
+                this.player.getPlayerInventory().removeItem(nextRoom.getKey());
+            else {
+                this.userInterface.println("Vous n'avez pas la clé nécessaire pour ouvrir la porte !");
+                return false;
+            }
+        }
         
         this.player.setCurrentRoom(nextRoom, true);
         printLocationInfo();
@@ -471,5 +480,5 @@ public class GameEngine {
             return true;
         }
     }
-    
+
 }

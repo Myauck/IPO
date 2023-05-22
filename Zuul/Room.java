@@ -22,6 +22,9 @@ public class Room
 
     private final HashMap<String, Room> exits = new HashMap<String, Room>();
     private final ItemList content;
+
+    private Item key;
+    private boolean locked;
     
     
     /**
@@ -36,6 +39,9 @@ public class Room
         this.description = description;
         this.imageName = imageName;
         this.content = new ItemList();
+
+        this.locked = false;
+        
     }
 
     /**
@@ -155,4 +161,53 @@ public class Room
         
         return "Available items (" + content.getSize() + ") : " + itemContent.toString();
     }
+
+
+    /**
+     * Permet de verifier si la salle actuelle est verrouillée
+     * @return Si la salle est verrouillée
+     */
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    /**
+     * Permet de changer le status de la salle ainsi que son accès
+     * @param locked Nouveau status de la salle
+     */
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
+    }
+
+    /**
+     * Permet de récupérer la clé nécessaire au déverrouillage de la salle
+     * @return Clé nécessaire
+     */
+    public Item getKey() {
+        return this.key;
+    }
+
+    /**
+     * Permet de définir une clé permettant de déverrouiller la salle
+     * @param key Nouvelle clé utilisée pour déverrouiller la salle
+     */
+    public void setKey(final Item key) {
+        this.key = key;
+    }
+
+    /**
+     * Permet de déverrouiller la salle avec une clé
+     * @param playerInventory Clés externes utilisée pour déverrouiller la salle
+     * @return Si la salle a été déverrouillée
+     */
+    public boolean tryToUnlock(final ItemList playerInventory) {
+        for(Item item : playerInventory.getContent()) {
+            if(item.equals(this.key)) {
+                setLocked(false);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
